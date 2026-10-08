@@ -1,36 +1,15 @@
 /* Mobile-first: one word per screen, options in the thumb zone at the bottom.
-   Plaster wall by day, fresco room at night. */
+   Strictly black and white: state is shown by fill, border and strike-through, never by colour. */
 :root {
-  --bg: #f1ebe2;
-  --card: #fbf8f3;
-  --fg: #2a1f18;
-  --muted: #7d6e62;
-  --line: rgba(42, 31, 24, 0.14);
-  --accent: #8f2d22;
-  --on-accent: #fbf8f3;
-  --gold: #a5741a;
-  --good: #2f7a5f;
-  --good-bg: #dcefe5;
-  --bad: #b2392a;
-  --bad-bg: #f6dcd6;
-  --display: "Cinzel", "Trajan Pro", Georgia, serif;
-  --body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --bg: #fff;
+  --fg: #000;
+  --font: "Atkinson Hyperlegible Next", "Helvetica Neue", Arial, system-ui, sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16110e;
-    --card: #221a15;
-    --fg: #eee5d6;
-    --muted: #a8998a;
-    --line: rgba(238, 229, 214, 0.13);
-    --accent: #d8a64a;
-    --on-accent: #16110e;
-    --gold: #d8a64a;
-    --good: #7cc2a4;
-    --good-bg: #1f3a30;
-    --bad: #ef7a66;
-    --bad-bg: #44201a;
+    --bg: #000;
+    --fg: #fff;
     color-scheme: dark;
   }
 }
@@ -40,14 +19,14 @@ html, body, #root { height: 100%; margin: 0; }
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--body);
+  font-family: var(--font);
   font-size: 17px;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
 }
 button { font: inherit; color: inherit; touch-action: manipulation; }
-button:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(--fg); outline-offset: 2px; }
 
 .app {
   height: 100dvh;
@@ -63,24 +42,23 @@ button:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(
   align-items: center;
   gap: 12px;
   padding: calc(env(safe-area-inset-top, 0px) + 8px) 16px 8px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 2px solid var(--fg);
 }
-.brand { font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: 0.06em; color: var(--accent); }
+.brand { font-weight: 800; font-size: 18px; }
 .stats {
   margin-left: auto;
   display: flex;
   gap: 14px;
   font-variant-numeric: tabular-nums;
-  color: var(--muted);
   font-size: 15px;
 }
-.stats b { color: var(--fg); }
+.stats b { font-weight: 800; }
 .icon-btn {
   width: 44px; height: 44px; margin-right: -10px;
   display: grid; place-items: center;
   background: none; border: 0; border-radius: 50%; cursor: pointer; color: var(--fg);
 }
-.icon-btn:active { background: var(--line); }
+.icon-btn:active { background: var(--fg); color: var(--bg); }
 
 /* ---- feed ---- */
 .feed {
@@ -108,26 +86,23 @@ button:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(
   text-align: center;
   min-height: 0;
 }
-.count { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-.count.again { color: var(--gold); font-weight: 700; }
+.count { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+.count.again { font-weight: 800; padding: 2px 8px; background: var(--fg); color: var(--bg); }
 .word {
   margin: 0;
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: clamp(36px, 12vw, 64px);
+  font-weight: 800;
+  font-size: clamp(38px, 12vw, 64px);
   line-height: 1.05;
-  letter-spacing: 0.03em;
+  letter-spacing: -0.01em;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
-.word.cz { font-family: var(--body); letter-spacing: 0; }
-.info { color: var(--muted); font-size: 18px; }
+.info { font-size: 18px; }
 
 .feedback { min-height: 3em; display: flex; align-items: center; justify-content: center; text-align: center; padding-block: 4px; }
 .verdict { font-size: 17px; line-height: 1.35; }
-.verdict.good { color: var(--good); font-weight: 700; font-size: 20px; }
-.verdict.bad { color: var(--bad); }
-.verdict.bad b { color: var(--fg); }
+.verdict.good { font-weight: 800; font-size: 20px; }
+.verdict.bad b { font-weight: 800; }
 
 .options { display: flex; flex-direction: column; gap: 10px; }
 .opt {
@@ -139,26 +114,26 @@ button:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(
   text-align: left;
   font-size: 19px;
   font-weight: 500;
-  background: var(--card);
-  border: 1px solid var(--line);
+  background: var(--bg);
+  border: 2px solid var(--fg);
   border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, opacity 0.2s, transform 0.1s;
 }
-.opt.la { font-family: var(--display); font-weight: 700; font-size: 18px; }
-.opt .key { font: 500 13px var(--body); color: var(--muted); min-width: 1ch; }
+.opt.la { font-weight: 700; }
+.opt .key { font-size: 13px; min-width: 1ch; }
 .opt:active:not(:disabled) { transform: scale(0.985); }
 .opt:disabled { cursor: default; }
-.opt.right { background: var(--good-bg); border-color: var(--good); }
-.opt.wrong { background: var(--bad-bg); border-color: var(--bad); }
-.opt.dim { opacity: 0.4; }
+.opt.right { background: var(--fg); color: var(--bg); font-weight: 800; }
+.opt.wrong { border-style: dashed; text-decoration: line-through; text-decoration-thickness: 2px; }
+.opt.dim { border-width: 1px; padding: 11px 17px; }
 .next {
   min-height: 52px;
   border: 0;
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 700;
+  background: var(--fg);
+  color: var(--bg);
+  font-weight: 800;
   font-size: 17px;
   cursor: pointer;
 }
@@ -167,7 +142,7 @@ button:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(
 @media (min-width: 560px) and (hover: hover) {
   .options { display: grid; grid-template-columns: 1fr 1fr; }
   .next { grid-column: 1 / -1; }
-  .opt:hover:not(:disabled) { border-color: var(--accent); }
+  .opt:hover:not(:disabled) { box-shadow: inset 0 0 0 1px var(--fg); }
 }
 
 /* ---- settings sheet ---- */
@@ -184,7 +159,8 @@ button:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(
 .sheet {
   width: 100%;
   max-width: 600px;
-  background: var(--card);
+  background: var(--bg);
+  border-top: 2px solid var(--fg);
   border-radius: 18px 18px 0 0;
   padding: 8px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
   display: flex;
@@ -192,10 +168,10 @@ button:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(
   gap: 18px;
   animation: rise 0.25s ease-out;
 }
-.grabber { width: 40px; height: 4px; border-radius: 2px; background: var(--line); align-self: center; }
-.sheet h2 { margin: 0; font-family: var(--display); font-size: 20px; letter-spacing: 0.05em; }
+.grabber { width: 40px; height: 4px; border-radius: 2px; background: var(--fg); align-self: center; }
+.sheet h2 { margin: 0; font-size: 20px; font-weight: 800; }
 fieldset { border: 0; margin: 0; padding: 0; }
-legend { padding: 0; margin-bottom: 8px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+legend { padding: 0; margin-bottom: 8px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { position: relative; cursor: pointer; }
 .chip input { position: absolute; opacity: 0; pointer-events: none; }
@@ -203,18 +179,18 @@ legend { padding: 0; margin-bottom: 8px; font-size: 12px; letter-spacing: 0.12em
   display: block;
   padding: 9px 14px;
   border-radius: 999px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--fg);
   font-size: 16px;
 }
-.chip input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
-.note { margin: 0; color: var(--muted); font-size: 15px; }
+.chip input:checked + span { background: var(--fg); color: var(--bg); font-weight: 800; }
+.note { margin: 0; font-size: 15px; }
 .done {
   min-height: 50px;
   border: 0;
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 700;
+  background: var(--fg);
+  color: var(--bg);
+  font-weight: 800;
   cursor: pointer;
 }
 
