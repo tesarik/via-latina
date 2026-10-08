@@ -17,13 +17,15 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
   const nextRef = useRef<HTMLButtonElement>(null);
   const note = answered ? q.word.note : undefined;
 
+  // The learner moves on when ready, so there's time to read the example.
   useEffect(() => {
-    if (answered && !ok) {
+    if (!answered) return;
+    if (!ok) {
       try {
         navigator.vibrate?.(40);
       } catch {}
-      nextRef.current?.focus({ preventScroll: true });
     }
+    nextRef.current?.focus({ preventScroll: true });
   }, [answered, ok]);
 
   return (
@@ -67,7 +69,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
             </button>
           );
         })}
-        {answered && !ok && (
+        {answered && (
           <button ref={nextRef} type="button" className="next" onClick={onNext}>
             Další slovíčko
           </button>

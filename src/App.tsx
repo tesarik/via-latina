@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { LESSONS, WORDS } from "./lessons";
-import { answer, isCorrect, newSession, type Session } from "./quiz/session";
+import { answer, newSession, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
 import type { Settings } from "./quiz/types";
 import QuestionCard from "./components/QuestionCard";
@@ -18,9 +18,6 @@ function reducer(s: Session, a: Action): Session {
   }
 }
 
-/** Pause after a right answer before gliding to the next word. */
-const ADVANCE_MS = 700;
-
 export default function App() {
   const [session, dispatch] = useReducer(reducer, undefined, () => newSession(loadSettings(LESSONS.map((l) => l.id)), WORDS));
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -30,7 +27,6 @@ export default function App() {
   const slides = useRef(new Map<number, HTMLElement>());
 
   const current = session.questions[session.questions.length - 1];
-  const prev = session.questions.length > 1 ? session.questions[session.questions.length - 2] : null;
 
   // Which card is on screen, kept up to date while scrolling.
   const visibleId = useRef<number | null>(null);
@@ -59,12 +55,6 @@ export default function App() {
     slides.current.get(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
-  // A right answer glides on by itself; a wrong one waits for "Další".
-  useEffect(() => {
-    if (!prev || !isCorrect(prev)) return;
-    const t = window.setTimeout(() => scrollTo(current.id), ADVANCE_MS);
-    return () => window.clearTimeout(t);
-  }, [prev, current.id, scrollTo]);
 
   const isCurrentInView = () => {
     const feed = feedRef.current;
