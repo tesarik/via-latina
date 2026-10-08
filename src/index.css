@@ -43,6 +43,7 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   gap: 12px;
   padding: calc(env(safe-area-inset-top, 0px) + 8px) 16px 8px;
   border-bottom: 2px solid var(--fg);
+  position: relative;
 }
 .brand { font-weight: 800; font-size: 20px; }
 .stats {
@@ -53,6 +54,33 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   font-size: 17px;
 }
 .stats b { font-weight: 800; }
+.stat-btn {
+  background: none;
+  border: 0;
+  padding: 10px 2px;
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+.stat-btn[aria-expanded="true"] { text-decoration-style: solid; }
+/* Anchored to the top bar, not the figure, so it never runs off a narrow screen. */
+.tip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 16px;
+  right: 16px;
+  z-index: 5;
+  padding: 12px 14px;
+  background: var(--fg);
+  color: var(--bg);
+  border-radius: 10px;
+  font-size: 17px;
+  line-height: 1.35;
+  font-variant-numeric: normal;
+  animation: fade 0.15s ease-out;
+}
 .icon-btn {
   width: 44px; height: 44px; margin-right: -10px;
   display: grid; place-items: center;

@@ -5,6 +5,7 @@ import { loadSettings, saveSettings } from "./quiz/settings";
 import type { Settings } from "./quiz/types";
 import QuestionCard from "./components/QuestionCard";
 import SettingsSheet from "./components/SettingsSheet";
+import StatTip from "./components/StatTip";
 
 type Action = { type: "answer"; id: number; choice: number } | { type: "restart"; settings: Settings };
 
@@ -23,6 +24,8 @@ const ADVANCE_MS = 700;
 export default function App() {
   const [session, dispatch] = useReducer(reducer, undefined, () => newSession(loadSettings(), WORDS));
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [tip, setTip] = useState<"score" | "streak" | null>(null);
+  const closeTip = useCallback(() => setTip(null), []);
   const feedRef = useRef<HTMLElement>(null);
   const slides = useRef(new Map<number, HTMLElement>());
 
@@ -75,12 +78,22 @@ export default function App() {
       <header className="topbar">
         <span className="brand">Via Latina</span>
         <span className="stats" aria-live="polite">
-          <span>
+          <StatTip
+            open={tip === "score"}
+            onToggle={() => setTip(tip === "score" ? null : "score")}
+            onClose={closeTip}
+            tip={`Správně ${session.right} z ${session.total} zodpovězených slovíček.`}
+          >
             <b>{session.right}</b>/{session.total}
-          </span>
-          <span className="streak" title="Série správných odpovědí">
+          </StatTip>
+          <StatTip
+            open={tip === "streak"}
+            onToggle={() => setTip(tip === "streak" ? null : "streak")}
+            onClose={closeTip}
+            tip="Série: kolik správných odpovědí máš za sebou bez chyby. Každá chyba ji vynuluje."
+          >
             série <b>{session.streak}</b>
-          </span>
+          </StatTip>
         </span>
         <button type="button" className="icon-btn" aria-label="Nastavení" onClick={() => setSettingsOpen(true)}>
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
