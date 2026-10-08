@@ -104,3 +104,16 @@ describe("session", () => {
     expect(s.deck.retry.map((r) => r.word)).toContain(q2.word);
   });
 });
+
+describe("notes", () => {
+  it("every word has an example with a translation, and no note is orphaned", async () => {
+    const { NOTES, noteFor, noteKey } = await import("./notes");
+    for (const w of WORDS) {
+      const n = noteFor(w);
+      expect(n, noteKey(w)).toBeDefined();
+      expect(n!.ex && n!.tr, noteKey(w)).toBeTruthy();
+    }
+    const keys = new Set(WORDS.map(noteKey));
+    for (const k of NOTES.keys()) expect(keys.has(k), k).toBe(true);
+  });
+});

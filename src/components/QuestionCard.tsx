@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useRef } from "react";
 import { isCorrect, type Question } from "../quiz/session";
+import { noteFor } from "../quiz/notes";
 
 interface Props {
   question: Question;
@@ -15,6 +16,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
   const answered = q.chosen !== null;
   const ok = answered && isCorrect(q);
   const nextRef = useRef<HTMLButtonElement>(null);
+  const note = answered ? noteFor(q.word) : undefined;
 
   useEffect(() => {
     if (answered && !ok) {
@@ -31,6 +33,13 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
         <div className={`count${q.again ? " again" : ""}`}>{q.again ? "znovu" : `slovíčko ${number}`}</div>
         <h2 className="word">{q.word.la}</h2>
         <div className="info">{q.word.info}</div>
+        {note && (
+          <div className="note">
+            <p className="ex" lang="la">{note.ex}</p>
+            <p className="tr">{note.tr}</p>
+            {note.remark && <p className="remark">{note.remark}</p>}
+          </div>
+        )}
       </div>
 
       <div className="feedback" aria-live="polite">

@@ -18,6 +18,7 @@ Pro nasazení do podsložky (např. GitHub Pages) nastav `BASE_PATH=/via-latina/
 ## Struktura
 
 - `src/quiz/words.ts` – slovní zásoba (latinsky, gramatika, česky), rozdělená podle slovních druhů
+- `src/quiz/notes.ts` – ke každému slovíčku latinská věta s českým překladem a krátká poznámka, zobrazí se po odpovědi
 - `src/quiz/engine.ts` – čistá logika: míchání, opakování chyb, výběr možností (bez Reactu, s testy)
 - `src/quiz/session.ts` – stav jednoho kola a vyhodnocení odpovědi
 - `src/quiz/settings.ts` – uložené nastavení (`localStorage`)

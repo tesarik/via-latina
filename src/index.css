@@ -85,6 +85,8 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   gap: 8px;
   text-align: center;
   min-height: 0;
+  overflow-y: auto;
+  justify-content: safe center;
 }
 .count { font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; }
 .count.again { font-weight: 800; padding: 2px 8px; background: var(--fg); color: var(--bg); }
@@ -98,6 +100,20 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   overflow-wrap: anywhere;
 }
 .info { font-size: 21px; }
+.note {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 2px solid var(--fg);
+  max-width: 32em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: fade 0.3s ease-out;
+}
+.note p { margin: 0; text-wrap: balance; }
+.note .ex { font-size: 21px; font-weight: 700; font-style: italic; }
+.note .tr { font-size: 19px; }
+.note .remark { font-size: 17px; margin-top: 6px; }
 
 .feedback { min-height: 3em; display: flex; align-items: center; justify-content: center; text-align: center; padding-block: 4px; }
 .verdict { font-size: 19px; line-height: 1.35; }
