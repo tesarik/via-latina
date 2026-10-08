@@ -10,11 +10,9 @@ export interface Word {
 }
 
 export type Category = "all" | Pos;
-export type Direction = "la" | "cz";
 
 export interface Settings {
   category: Category;
-  direction: Direction;
 }
 
 export const CATEGORY_LABELS: Record<Category, string> = {
@@ -23,9 +21,4 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   v: "Slovesa",
   a: "Přídavná jména",
   o: "Ostatní",
-};
-
-export const DIRECTION_LABELS: Record<Direction, string> = {
-  la: "latina → čeština",
-  cz: "čeština → latina",
 };

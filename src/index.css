@@ -120,7 +120,6 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, opacity 0.2s, transform 0.1s;
 }
-.opt.la { font-weight: 700; }
 .opt .key { font-size: 13px; min-width: 1ch; }
 .opt:active:not(:disabled) { transform: scale(0.985); }
 .opt:disabled { cursor: default; }

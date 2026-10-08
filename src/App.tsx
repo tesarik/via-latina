@@ -94,14 +94,13 @@ export default function App() {
       <main className="feed" ref={feedRef}>
         {session.questions.map((q, i) => (
           <QuestionCard
-            key={`${session.settings.category}-${session.settings.direction}-${q.id}`}
+            key={`${session.settings.category}-${q.id}`}
             ref={(el) => {
               if (el) slides.current.set(q.id, el);
               else slides.current.delete(q.id);
             }}
             question={q}
             number={i + 1}
-            direction={session.settings.direction}
             onAnswer={(choice) => dispatch({ type: "answer", id: q.id, choice })}
             onNext={() => scrollTo(current.id)}
           />

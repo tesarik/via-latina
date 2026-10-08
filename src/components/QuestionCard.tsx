@@ -1,20 +1,17 @@
 import { forwardRef, useEffect, useRef } from "react";
 import { isCorrect, type Question } from "../quiz/session";
-import type { Direction } from "../quiz/types";
 
 interface Props {
   question: Question;
   number: number;
-  direction: Direction;
   onAnswer: (choice: number) => void;
   onNext: () => void;
 }
 
 const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
-  { question: q, number, direction, onAnswer, onNext },
+  { question: q, number, onAnswer, onNext },
   ref,
 ) {
-  const la = direction === "la";
   const answered = q.chosen !== null;
   const ok = answered && isCorrect(q);
   const nextRef = useRef<HTMLButtonElement>(null);
@@ -32,8 +29,8 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
     <section className="slide" ref={ref} aria-label={`Slovíčko ${number}`}>
       <div className="prompt">
         <div className={`count${q.again ? " again" : ""}`}>{q.again ? "znovu" : `slovíčko ${number}`}</div>
-        <h2 className="word">{la ? q.word.la : q.word.cz}</h2>
-        <div className="info">{la ? q.word.info : "přelož do latiny"}</div>
+        <h2 className="word">{q.word.la}</h2>
+        <div className="info">{q.word.info}</div>
       </div>
 
       <div className="feedback" aria-live="polite">
@@ -50,7 +47,6 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
       <div className="options">
         {q.options.map((o, i) => {
           let cls = "opt";
-          if (!la) cls += " la";
           if (answered) {
             if (o === q.word) cls += " right";
             else if (i === q.chosen) cls += " wrong";
@@ -59,7 +55,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
           return (
             <button key={o.la + o.cz} type="button" className={cls} disabled={answered} onClick={() => onAnswer(i)}>
               <span className="key" aria-hidden="true">{i + 1}</span>
-              <span>{la ? o.cz : o.la}</span>
+              <span>{o.cz}</span>
             </button>
           );
         })}

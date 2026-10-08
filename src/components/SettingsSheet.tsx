@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { WORDS } from "../quiz/words";
 import { poolFor } from "../quiz/engine";
-import { CATEGORY_LABELS, DIRECTION_LABELS, type Category, type Direction, type Settings } from "../quiz/types";
+import { CATEGORY_LABELS, type Category, type Settings } from "../quiz/types";
 
 interface Props {
   settings: Settings;
@@ -41,22 +41,6 @@ export default function SettingsSheet({ settings, onChange, onClose }: Props) {
           </div>
         </fieldset>
 
-        <fieldset>
-          <legend>Směr</legend>
-          <div className="chips">
-            {(Object.keys(DIRECTION_LABELS) as Direction[]).map((d) => (
-              <label key={d} className="chip">
-                <input
-                  type="radio"
-                  name="direction"
-                  checked={settings.direction === d}
-                  onChange={() => onChange({ ...settings, direction: d })}
-                />
-                <span>{DIRECTION_LABELS[d]}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
 
         <p className="note">
           {count} slovíček ve výběru. Změna nastavení začne nové kolo.

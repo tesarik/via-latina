@@ -60,7 +60,7 @@ export function scheduleRetry(state: DeckState, word: Word, gap = RETRY_GAP): De
 /**
  * The correct word plus distractors, shuffled. Distractors come from the same
  * word class where possible, and no two options share a Latin or Czech form,
- * so every question has exactly one right answer in either direction.
+ * so every question has exactly one right answer.
  */
 export function pickOptions(
   word: Word,
