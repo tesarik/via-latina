@@ -20,7 +20,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font);
-  font-size: 17px;
+  font-size: 19px;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
@@ -44,13 +44,13 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   padding: calc(env(safe-area-inset-top, 0px) + 8px) 16px 8px;
   border-bottom: 2px solid var(--fg);
 }
-.brand { font-weight: 800; font-size: 18px; }
+.brand { font-weight: 800; font-size: 20px; }
 .stats {
   margin-left: auto;
   display: flex;
   gap: 14px;
   font-variant-numeric: tabular-nums;
-  font-size: 15px;
+  font-size: 17px;
 }
 .stats b { font-weight: 800; }
 .icon-btn {
@@ -86,33 +86,33 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   text-align: center;
   min-height: 0;
 }
-.count { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+.count { font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; }
 .count.again { font-weight: 800; padding: 2px 8px; background: var(--fg); color: var(--bg); }
 .word {
   margin: 0;
   font-weight: 800;
-  font-size: clamp(38px, 12vw, 64px);
+  font-size: clamp(44px, 14vw, 72px);
   line-height: 1.05;
   letter-spacing: -0.01em;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
-.info { font-size: 18px; }
+.info { font-size: 21px; }
 
 .feedback { min-height: 3em; display: flex; align-items: center; justify-content: center; text-align: center; padding-block: 4px; }
-.verdict { font-size: 17px; line-height: 1.35; }
-.verdict.good { font-weight: 800; font-size: 20px; }
+.verdict { font-size: 19px; line-height: 1.35; }
+.verdict.good { font-weight: 800; font-size: 23px; }
 .verdict.bad b { font-weight: 800; }
 
 .options { display: flex; flex-direction: column; gap: 10px; }
 .opt {
-  min-height: 56px;
+  min-height: 62px;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
   text-align: left;
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 500;
   background: var(--bg);
   border: 2px solid var(--fg);
@@ -120,20 +120,20 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, opacity 0.2s, transform 0.1s;
 }
-.opt .key { font-size: 13px; min-width: 1ch; }
+.opt .key { font-size: 15px; min-width: 1ch; }
 .opt:active:not(:disabled) { transform: scale(0.985); }
 .opt:disabled { cursor: default; }
 .opt.right { background: var(--fg); color: var(--bg); font-weight: 800; }
 .opt.wrong { border-style: dashed; text-decoration: line-through; text-decoration-thickness: 2px; }
 .opt.dim { border-width: 1px; padding: 11px 17px; }
 .next {
-  min-height: 52px;
+  min-height: 56px;
   border: 0;
   border-radius: 999px;
   background: var(--fg);
   color: var(--bg);
   font-weight: 800;
-  font-size: 17px;
+  font-size: 19px;
   cursor: pointer;
 }
 
@@ -168,9 +168,9 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
   animation: rise 0.25s ease-out;
 }
 .grabber { width: 40px; height: 4px; border-radius: 2px; background: var(--fg); align-self: center; }
-.sheet h2 { margin: 0; font-size: 20px; font-weight: 800; }
+.sheet h2 { margin: 0; font-size: 23px; font-weight: 800; }
 fieldset { border: 0; margin: 0; padding: 0; }
-legend { padding: 0; margin-bottom: 8px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { position: relative; cursor: pointer; }
 .chip input { position: absolute; opacity: 0; pointer-events: none; }
@@ -179,12 +179,12 @@ legend { padding: 0; margin-bottom: 8px; font-size: 12px; letter-spacing: 0.12em
   padding: 9px 14px;
   border-radius: 999px;
   border: 2px solid var(--fg);
-  font-size: 16px;
+  font-size: 18px;
 }
 .chip input:checked + span { background: var(--fg); color: var(--bg); font-weight: 800; }
-.note { margin: 0; font-size: 15px; }
+.note { margin: 0; font-size: 17px; }
 .done {
-  min-height: 50px;
+  min-height: 54px;
   border: 0;
   border-radius: 999px;
   background: var(--fg);
