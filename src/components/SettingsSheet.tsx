@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { LESSONS, WORDS } from "../lessons";
 import { poolFor } from "../quiz/engine";
+import { toggleLesson } from "../quiz/settings";
 import type { Settings } from "../quiz/types";
 
 interface Props {
@@ -21,10 +22,8 @@ export default function SettingsSheet({ settings, onChange, onClose }: Props) {
   const count = poolFor(WORDS, selected).length;
 
   const toggle = (id: string) => {
-    const next = selected.includes(id) ? selected.filter((l) => l !== id) : [...selected, id];
-    // Keep lesson order stable; selecting every lesson is the same as "all".
-    const ordered = LESSONS.map((l) => l.id).filter((l) => next.includes(l));
-    onChange({ ...settings, lessons: ordered.length === LESSONS.length ? [] : ordered });
+    const next = toggleLesson(selected, id, LESSONS.map((l) => l.id));
+    if (next) onChange({ ...settings, lessons: next });
   };
 
   return (
@@ -36,13 +35,15 @@ export default function SettingsSheet({ settings, onChange, onClose }: Props) {
         <fieldset>
           <legend>Lekce</legend>
           <div className="lessons">
-            <label className="lesson">
-              <input type="checkbox" checked={all} onChange={() => !all && onChange({ ...settings, lessons: [] })} />
-              <span>Všechny lekce</span>
-            </label>
+            {LESSONS.length > 1 && (
+              <label className="lesson">
+                <input type="checkbox" checked={all} onChange={() => !all && onChange({ ...settings, lessons: [] })} />
+                <span>Všechny lekce</span>
+              </label>
+            )}
             {LESSONS.map((l) => (
               <label key={l.id} className="lesson">
-                <input type="checkbox" checked={!all && selected.includes(l.id)} onChange={() => toggle(l.id)} />
+                <input type="checkbox" checked={all || selected.includes(l.id)} onChange={() => toggle(l.id)} />
                 <span>{l.title}</span>
                 <small>{l.words.length}</small>
               </label>
@@ -51,7 +52,9 @@ export default function SettingsSheet({ settings, onChange, onClose }: Props) {
         </fieldset>
 
         <p className="note-line">
-          {count} slovíček ve výběru. Změna nastavení začne nové kolo.
+          {LESSONS.length > 1
+            ? `${count} slovíček ve výběru. Změna výběru začne nové kolo.`
+            : `${count} slovíček. Zatím je k dispozici jen jedna lekce.`}
         </p>
         <button type="button" className="done" onClick={onClose}>
           Hotovo

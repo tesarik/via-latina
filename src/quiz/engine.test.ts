@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, type DeckState } from "./engine";
 import { answer, isCorrect, newSession } from "./session";
 import { LESSONS, WORDS } from "../lessons";
+import { toggleLesson } from "./settings";
 import type { Word } from "./types";
 
 // Deterministic PRNG so failures reproduce.
@@ -149,5 +150,26 @@ describe("session", () => {
       expect(q.word.lesson).toBe(id);
       s = answer(s, q.id, 0, WORDS, rng);
     }
+  });
+});
+
+describe("toggleLesson", () => {
+  const ids = ["01", "02", "03"];
+
+  it("unticking one lesson out of all keeps the others", () => {
+    expect(toggleLesson([], "02", ids)).toEqual(["01", "03"]);
+  });
+
+  it("ticking the last missing lesson means all again", () => {
+    expect(toggleLesson(["01", "03"], "02", ids)).toEqual([]);
+  });
+
+  it("keeps lesson order whatever the tapping order", () => {
+    expect(toggleLesson(["03"], "01", ids)).toEqual(["01", "03"]);
+  });
+
+  it("refuses to untick the only selected lesson", () => {
+    expect(toggleLesson(["02"], "02", ids)).toBeNull();
+    expect(toggleLesson([], "01", ["01"])).toBeNull();
   });
 });
