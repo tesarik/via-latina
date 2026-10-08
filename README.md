@@ -1,6 +1,6 @@
 # Via Latina
 
-Klidný kvíz na latinská slovíčka, primárně pro mobil. Na obrazovce je vždy jedno slovíčko a čtyři významy. Po odpovědi se ukáže správný význam, příkladová věta a poznámka; na další slovíčko se přejde tlačítkem se šipkou dolů nebo posunutím, na předchozí šipkou nahoru. Chybně zodpovězené slovíčko se za pár kol vrátí.
+Klidný kvíz na latinská slovíčka, primárně pro mobil. Na obrazovce je vždy jedno slovíčko a čtyři významy. Po odpovědi se ukáže správný význam, příkladová věta a poznámka; na další slovíčko se přejde tlačítkem se šipkou dolů nebo posunutím, na předchozí šipkou nahoru. Chybně zodpovězené slovíčko se za pár kol vrátí. V nastavení se vybírá, ze kterých lekcí (sad slovíček) se procvičuje; klepnutím na skóre nebo sérii v záhlaví se ukáže, co znamenají.
 
 ## Vývoj
 
@@ -25,10 +25,10 @@ Pro nasazení do podsložky (např. GitHub Pages) nastav `BASE_PATH=/via-latina/
 Každá sada slovíček (v aplikaci „lekce“) je jeden soubor ve složce `src/lessons/`. Název souboru začíná číslem, které určuje pořadí v nastavení (`00-…`, `01-…`, `02-…`). Zbytek názvu je jen pro orientaci.
 
 ```ts
-// src/lessons/01-prvni-deklinace.ts
+// src/lessons/03-slovicka-4.ts
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Lekce 1 – První deklinace", [
+export default lesson("Slovíčka 4", [
   n("aqua", "aquae f.", "voda", ["Aqua vitae est.", "Voda je život.", "Odtud akvárium."]),
   v("amo", "amāre, amāvī, amātum", "milovat"),
   a("bonus", "bona, bonum", "dobrý"),
@@ -49,5 +49,5 @@ Po přidání souboru spusť `npm test`. Test zkontroluje, že žádné pole nen
 - `src/quiz/engine.ts` – čistá logika: výběr slovíček z lekcí, míchání, opakování chyb, výběr možností (bez Reactu, s testy)
 - `src/quiz/session.ts` – stav jednoho kola a vyhodnocení odpovědi
 - `src/quiz/settings.ts` – uložený výběr lekcí (`localStorage`)
-- `src/App.tsx` – scrollovací feed, automatický posun, klávesnice
+- `src/App.tsx` – scrollovací feed (drží posledních 20 karet), šipky nahoru/dolů, klávesnice
 - `src/components/` – karta slovíčka, nastavení, vysvětlivky v záhlaví
