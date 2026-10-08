@@ -108,6 +108,20 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
   flex-direction: column;
   padding: 16px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
 }
+/* Fixed height so cards line up whether or not the back arrow is shown. */
+.prev-row { height: 44px; display: flex; justify-content: center; flex: none; }
+.prev {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--fg);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+}
+.prev:active { background: var(--fg); color: var(--bg); }
 .prompt {
   flex: 1;
   display: flex;

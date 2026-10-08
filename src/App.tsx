@@ -118,7 +118,7 @@ export default function App() {
       </header>
 
       <main className="feed" ref={feedRef} onScroll={onScroll}>
-        {session.questions.map((q) => (
+        {session.questions.map((q, i) => (
           <QuestionCard
             key={`${session.settings.lessons.join(",")}-${q.id}`}
             ref={(el) => {
@@ -129,6 +129,7 @@ export default function App() {
             number={q.id}
             onAnswer={(choice) => dispatch({ type: "answer", id: q.id, choice })}
             onNext={() => scrollTo(current.id)}
+            onPrev={i > 0 ? () => scrollTo(session.questions[i - 1].id) : undefined}
           />
         ))}
       </main>

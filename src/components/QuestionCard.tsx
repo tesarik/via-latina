@@ -6,10 +6,12 @@ interface Props {
   number: number;
   onAnswer: (choice: number) => void;
   onNext: () => void;
+  /** Back to the previous card; absent on the oldest card in the feed. */
+  onPrev?: () => void;
 }
 
 const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
-  { question: q, number, onAnswer, onNext },
+  { question: q, number, onAnswer, onNext, onPrev },
   ref,
 ) {
   const answered = q.chosen !== null;
@@ -30,6 +32,15 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
 
   return (
     <section className="slide" ref={ref} data-id={q.id} aria-label={`Slovíčko ${number}`}>
+      <div className="prev-row">
+        {onPrev && (
+          <button type="button" className="prev" aria-label="Předchozí slovíčko" onClick={onPrev}>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+              <path d="M12 20V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
+          </button>
+        )}
+      </div>
       <div className="prompt">
         <div className={`count${q.again ? " again" : ""}`}>{q.again ? "znovu" : number}</div>
         <h2 className="word">{q.word.la}</h2>

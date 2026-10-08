@@ -1,6 +1,6 @@
 # Via Latina
 
-Klidný kvíz na latinská slovíčka, primárně pro mobil. Na obrazovce je vždy jedno slovíčko a čtyři významy. Po odpovědi se ukáže správný význam, příkladová věta a poznámka; na další slovíčko se přejde tlačítkem se šipkou dolů nebo posunutím. Chybně zodpovězené slovíčko se za pár kol vrátí.
+Klidný kvíz na latinská slovíčka, primárně pro mobil. Na obrazovce je vždy jedno slovíčko a čtyři významy. Po odpovědi se ukáže správný význam, příkladová věta a poznámka; na další slovíčko se přejde tlačítkem se šipkou dolů nebo posunutím, na předchozí šipkou nahoru. Chybně zodpovězené slovíčko se za pár kol vrátí.
 
 ## Vývoj
 
