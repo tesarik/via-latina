@@ -90,7 +90,7 @@ export default function App() {
             open={tip === "streak"}
             onToggle={() => setTip(tip === "streak" ? null : "streak")}
             onClose={closeTip}
-            tip="Série: kolik správných odpovědí máš za sebou bez chyby. Každá chyba ji vynuluje."
+            tip="Správné odpovědi v řadě bez chyby."
           >
             série <b>{session.streak}</b>
           </StatTip>
