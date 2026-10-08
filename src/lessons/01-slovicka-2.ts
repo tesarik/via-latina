@@ -1,7 +1,5 @@
 import { lesson, n, v, a, o } from "./define";
 
-// Základní slovní zásoba (■) z učebnice M. Šlesinger: Základy latinského jazyka
-// pro posluchače teologie, v pořadí, v jakém se slova v učebnici objevují.
 export default lesson("Slovíčka 2", [
   o("ab", "předložka + abl. (ā, ab, abs)", "od, z"),
   v("accipio", "accipere, accēpī, acceptum", "přijímám, beru, dostávám"),

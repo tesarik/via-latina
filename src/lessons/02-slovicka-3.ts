@@ -1,7 +1,5 @@
 import { lesson, n, v, a, o } from "./define";
 
-// Základní slovní zásoba (■) z učebnice M. Šlesinger: Základy latinského jazyka
-// pro posluchače teologie, v pořadí, v jakém se slova v učebnici objevují.
 export default lesson("Slovíčka 3", [
   v("annuntio", "annūntiāre, annūntiāvī, annūntiātum", "oznamuji, zvěstuji"),
   n("calix", "calicis m.", "kalich, pohár"),

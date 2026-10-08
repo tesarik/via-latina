@@ -18,7 +18,7 @@ Pro nasazení do podsložky (např. GitHub Pages) nastav `BASE_PATH=/via-latina/
 ## Slovní zásoba
 
 - **Slovíčka 1** (`00-zakladni-slovicka.ts`) – běžná školní slovní zásoba, ke každému slovíčku latinská věta s překladem a poznámka.
-- **Slovíčka 2 a 3** (`01-slovicka-2.ts`, `02-slovicka-3.ts`) – základní slovní zásoba (hesla označená ■) ze slovníku učebnice M. Šlesinger: *Základy latinského jazyka pro posluchače teologie* (Karolinum, 2001), bez slov, která už jsou ve Slovíčkách 1, v pořadí, v jakém se v učebnici objevují. Převedeno z OCR a ručně opraveno; české významy jsou zkrácené, slovesa v 1. osobě jako v učebnici.
+- **Slovíčka 2 a 3** (`01-slovicka-2.ts`, `02-slovicka-3.ts`) – další základní slovní zásoba bez slov, která už jsou ve Slovíčkách 1. České významy jsou zkrácené, slovesa v 1. osobě.
 
 ## Přidání lekce
 
