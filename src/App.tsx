@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import { WORDS } from "./quiz/words";
+import { LESSONS, WORDS } from "./lessons";
 import { answer, isCorrect, newSession, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
 import type { Settings } from "./quiz/types";
@@ -22,7 +22,7 @@ function reducer(s: Session, a: Action): Session {
 const ADVANCE_MS = 700;
 
 export default function App() {
-  const [session, dispatch] = useReducer(reducer, undefined, () => newSession(loadSettings(), WORDS));
+  const [session, dispatch] = useReducer(reducer, undefined, () => newSession(loadSettings(LESSONS.map((l) => l.id)), WORDS));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [tip, setTip] = useState<"score" | "streak" | null>(null);
   const closeTip = useCallback(() => setTip(null), []);
@@ -107,7 +107,7 @@ export default function App() {
       <main className="feed" ref={feedRef}>
         {session.questions.map((q, i) => (
           <QuestionCard
-            key={`${session.settings.category}-${q.id}`}
+            key={`${session.settings.lessons.join(",")}-${q.id}`}
             ref={(el) => {
               if (el) slides.current.set(q.id, el);
               else slides.current.delete(q.id);

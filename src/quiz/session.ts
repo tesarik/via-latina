@@ -22,10 +22,10 @@ export interface Session {
 }
 
 function withNextQuestion(s: Omit<Session, "questions"> & { questions: Question[] }, words: readonly Word[], rng: Rng): Session {
-  const pool = poolFor(words, s.settings.category);
+  const pool = poolFor(words, s.settings.lessons);
   const { state, word, again } = drawNext(s.deck, pool, rng);
   const id = (s.questions.at(-1)?.id ?? 0) + 1;
-  const q: Question = { id, word, options: pickOptions(word, words, undefined, rng), again, chosen: null };
+  const q: Question = { id, word, options: pickOptions(word, pool, words, undefined, rng), again, chosen: null };
   return { ...s, deck: state, questions: [...s.questions, q] };
 }
 

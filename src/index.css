@@ -26,7 +26,7 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 button { font: inherit; color: inherit; touch-action: manipulation; }
-button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(--fg); outline-offset: 2px; }
+button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
 
 .app {
   height: 100dvh;
@@ -215,18 +215,48 @@ button:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(
 .sheet h2 { margin: 0; font-size: 23px; font-weight: 800; }
 fieldset { border: 0; margin: 0; padding: 0; }
 legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { position: relative; cursor: pointer; }
-.chip input { position: absolute; opacity: 0; pointer-events: none; }
-.chip span {
-  display: block;
-  padding: 9px 14px;
-  border-radius: 999px;
-  border: 2px solid var(--fg);
+.lessons {
+  display: flex;
+  flex-direction: column;
+  max-height: 50dvh;
+  overflow-y: auto;
+  border-top: 1px solid var(--fg);
+}
+.lesson {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding-block: 8px;
+  border-bottom: 1px solid var(--fg);
+  cursor: pointer;
   font-size: 18px;
 }
-.chip input:checked + span { background: var(--fg); color: var(--bg); font-weight: 800; }
-.note { margin: 0; font-size: 17px; }
+.lesson input {
+  appearance: none;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border: 2px solid var(--fg);
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+}
+.lesson input:checked { background: var(--fg); }
+.lesson input:checked::after {
+  content: "";
+  width: 6px;
+  height: 12px;
+  margin-top: -3px;
+  border: solid var(--bg);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+.lesson input:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+.lesson span { flex: 1; min-width: 0; }
+.lesson small { font-size: 15px; font-variant-numeric: tabular-nums; }
+.note-line { margin: 0; font-size: 17px; }
 .done {
   min-height: 54px;
   border: 0;

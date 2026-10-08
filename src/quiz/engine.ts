@@ -1,4 +1,4 @@
-import type { Category, Word } from "./types";
+import type { Word } from "./types";
 
 export type Rng = () => number;
 
@@ -26,8 +26,19 @@ export function shuffle<T>(items: readonly T[], rng: Rng = Math.random): T[] {
   return a;
 }
 
-export function poolFor(words: readonly Word[], category: Category): Word[] {
-  return category === "all" ? [...words] : words.filter((w) => w.pos === category);
+/**
+ * Words of the selected lessons (all lessons when none is selected). A word that
+ * appears in several selected lessons is asked only once per pass.
+ */
+export function poolFor(words: readonly Word[], lessons: readonly string[]): Word[] {
+  const picked = lessons.length ? words.filter((w) => lessons.includes(w.lesson)) : words;
+  const seen = new Set<string>();
+  return picked.filter((w) => {
+    const k = `${w.la}|${w.cz}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }
 
 /** Next word to ask: a due retry first, otherwise the next word of the shuffled pass. */
@@ -59,11 +70,12 @@ export function scheduleRetry(state: DeckState, word: Word, gap = RETRY_GAP): De
 
 /**
  * The correct word plus distractors, shuffled. Distractors come from the same
- * word class where possible, and no two options share a Latin or Czech form,
- * so every question has exactly one right answer.
+ * word class, preferably from the lessons being practised, and no two options
+ * share a Latin or Czech form, so every question has exactly one right answer.
  */
 export function pickOptions(
   word: Word,
+  pool: readonly Word[],
   all: readonly Word[],
   count = OPTION_COUNT,
   rng: Rng = Math.random,
@@ -75,6 +87,7 @@ export function pickOptions(
       if (picked.every((p) => p.cz !== w.cz && p.la !== w.la)) picked.push(w);
     }
   };
+  add(pool.filter((w) => w.pos === word.pos));
   add(all.filter((w) => w.pos === word.pos));
   add(all);
   return shuffle(picked, rng);

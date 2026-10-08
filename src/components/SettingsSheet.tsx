@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { WORDS } from "../quiz/words";
+import { LESSONS, WORDS } from "../lessons";
 import { poolFor } from "../quiz/engine";
-import { CATEGORY_LABELS, type Category, type Settings } from "../quiz/types";
+import type { Settings } from "../quiz/types";
 
 interface Props {
   settings: Settings;
@@ -16,7 +16,16 @@ export default function SettingsSheet({ settings, onChange, onClose }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const count = poolFor(WORDS, settings.category).length;
+  const selected = settings.lessons;
+  const all = selected.length === 0;
+  const count = poolFor(WORDS, selected).length;
+
+  const toggle = (id: string) => {
+    const next = selected.includes(id) ? selected.filter((l) => l !== id) : [...selected, id];
+    // Keep lesson order stable; selecting every lesson is the same as "all".
+    const ordered = LESSONS.map((l) => l.id).filter((l) => next.includes(l));
+    onChange({ ...settings, lessons: ordered.length === LESSONS.length ? [] : ordered });
+  };
 
   return (
     <div className="sheet-backdrop" onClick={onClose}>
@@ -25,24 +34,23 @@ export default function SettingsSheet({ settings, onChange, onClose }: Props) {
         <h2 id="sheet-title">Nastavení</h2>
 
         <fieldset>
-          <legend>Slovíčka</legend>
-          <div className="chips">
-            {(Object.keys(CATEGORY_LABELS) as Category[]).map((c) => (
-              <label key={c} className="chip">
-                <input
-                  type="radio"
-                  name="category"
-                  checked={settings.category === c}
-                  onChange={() => onChange({ ...settings, category: c })}
-                />
-                <span>{CATEGORY_LABELS[c]}</span>
+          <legend>Lekce</legend>
+          <div className="lessons">
+            <label className="lesson">
+              <input type="checkbox" checked={all} onChange={() => !all && onChange({ ...settings, lessons: [] })} />
+              <span>Všechny lekce</span>
+            </label>
+            {LESSONS.map((l) => (
+              <label key={l.id} className="lesson">
+                <input type="checkbox" checked={!all && selected.includes(l.id)} onChange={() => toggle(l.id)} />
+                <span>{l.title}</span>
+                <small>{l.words.length}</small>
               </label>
             ))}
           </div>
         </fieldset>
 
-
-        <p className="note">
+        <p className="note-line">
           {count} slovíček ve výběru. Změna nastavení začne nové kolo.
         </p>
         <button type="button" className="done" onClick={onClose}>

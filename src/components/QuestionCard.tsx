@@ -1,6 +1,5 @@
 import { forwardRef, useEffect, useRef } from "react";
 import { isCorrect, type Question } from "../quiz/session";
-import { noteFor } from "../quiz/notes";
 
 interface Props {
   question: Question;
@@ -16,7 +15,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
   const answered = q.chosen !== null;
   const ok = answered && isCorrect(q);
   const nextRef = useRef<HTMLButtonElement>(null);
-  const note = answered ? noteFor(q.word) : undefined;
+  const note = answered ? q.word.note : undefined;
 
   useEffect(() => {
     if (answered && !ok) {
