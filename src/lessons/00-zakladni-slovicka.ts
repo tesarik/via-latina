@@ -1,6 +1,6 @@
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Základní slovíčka", [
+export default lesson("Slovíčka 1", [
   // Podstatná jména
   n("aqua", "aquae f.", "voda", ["Aqua vitae est.", "Voda je život.", "Odtud akvárium, akvadukt."]),
   n("puella", "puellae f.", "dívka", ["Puella rosam amat.", "Dívka miluje růži."]),
