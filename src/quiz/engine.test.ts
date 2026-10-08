@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, type DeckState } from "./engine";
-import { answer, isCorrect, newSession } from "./session";
+import { answer, HISTORY_LIMIT, isCorrect, newSession } from "./session";
 import { LESSONS, WORDS } from "../lessons";
 import { toggleLesson } from "./settings";
 import type { Word } from "./types";
@@ -139,6 +139,19 @@ describe("session", () => {
     expect(s.streak).toBe(0);
     expect(s.total).toBe(2);
     expect(s.deck.retry.map((r) => r.word)).toContain(q2.word);
+  });
+
+  it("keeps only the latest cards while numbering keeps counting", () => {
+    const rng = seeded(8);
+    let s = newSession({ lessons: [] }, WORDS, rng);
+    for (let i = 0; i < 50; i++) {
+      const q = s.questions.at(-1)!;
+      s = answer(s, q.id, 0, WORDS, rng);
+    }
+    expect(s.questions).toHaveLength(HISTORY_LIMIT);
+    expect(s.questions.at(-1)!.id).toBe(51);
+    expect(s.questions.at(-1)!.chosen).toBeNull();
+    expect(s.total).toBe(50);
   });
 
   it("asks only words from the selected lesson", () => {

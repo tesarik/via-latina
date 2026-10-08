@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { LESSONS, WORDS } from "./lessons";
 import { answer, isCorrect, newSession, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
@@ -31,6 +31,29 @@ export default function App() {
 
   const current = session.questions[session.questions.length - 1];
   const prev = session.questions.length > 1 ? session.questions[session.questions.length - 2] : null;
+
+  // Which card is on screen, kept up to date while scrolling.
+  const visibleId = useRef<number | null>(null);
+  const onScroll = () => {
+    const feed = feedRef.current;
+    if (!feed || !feed.clientHeight) return;
+    const el = feed.children[Math.round(feed.scrollTop / feed.clientHeight)] as HTMLElement | undefined;
+    visibleId.current = el ? Number(el.dataset.id) : null;
+  };
+
+  // When old cards are dropped from the top, put the card that was on screen
+  // back in place. Setting the position (rather than shifting it) is right
+  // whether or not the browser already re-snapped to that card by itself.
+  const firstId = session.questions[0].id;
+  const prevFirstId = useRef(firstId);
+  useLayoutEffect(() => {
+    const dropped = firstId > prevFirstId.current;
+    prevFirstId.current = firstId;
+    const feed = feedRef.current;
+    if (!dropped || !feed) return;
+    const el = visibleId.current !== null ? slides.current.get(visibleId.current) : undefined;
+    feed.scrollTop = el ? el.offsetTop : 0;
+  }, [firstId]);
 
   const scrollTo = useCallback((id: number) => {
     slides.current.get(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -104,8 +127,8 @@ export default function App() {
         </button>
       </header>
 
-      <main className="feed" ref={feedRef}>
-        {session.questions.map((q, i) => (
+      <main className="feed" ref={feedRef} onScroll={onScroll}>
+        {session.questions.map((q) => (
           <QuestionCard
             key={`${session.settings.lessons.join(",")}-${q.id}`}
             ref={(el) => {
@@ -113,7 +136,7 @@ export default function App() {
               else slides.current.delete(q.id);
             }}
             question={q}
-            number={i + 1}
+            number={q.id}
             onAnswer={(choice) => dispatch({ type: "answer", id: q.id, choice })}
             onNext={() => scrollTo(current.id)}
           />

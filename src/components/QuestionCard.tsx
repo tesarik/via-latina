@@ -27,7 +27,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
   }, [answered, ok]);
 
   return (
-    <section className="slide" ref={ref} aria-label={`Slovíčko ${number}`}>
+    <section className="slide" ref={ref} data-id={q.id} aria-label={`Slovíčko ${number}`}>
       <div className="prompt">
         <div className={`count${q.again ? " again" : ""}`}>{q.again ? "znovu" : number}</div>
         <h2 className="word">{q.word.la}</h2>

@@ -95,6 +95,10 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
   overflow-y: auto;
   scroll-snap-type: y mandatory;
   overscroll-behavior: contain;
+  /* App.tsx restores the card on screen itself when old cards are dropped. */
+  overflow-anchor: none;
+  /* Cards' offsetTop is measured from the feed, not the page. */
+  position: relative;
 }
 .slide {
   height: 100%;

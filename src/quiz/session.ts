@@ -14,19 +14,26 @@ export interface Question {
 export interface Session {
   settings: Settings;
   deck: DeckState;
-  /** Answered questions followed by exactly one unanswered one (the last). */
+  /**
+   * The most recent answered questions (at most HISTORY_LIMIT - 1, older ones are
+   * dropped to keep the feed light) followed by exactly one unanswered one.
+   * Ids keep counting up, so `id` is also the word's number in the round.
+   */
   questions: Question[];
   right: number;
   total: number;
   streak: number;
 }
 
+/** How many cards the feed keeps, including the open one; older answered cards are dropped. */
+export const HISTORY_LIMIT = 20;
+
 function withNextQuestion(s: Omit<Session, "questions"> & { questions: Question[] }, words: readonly Word[], rng: Rng): Session {
   const pool = poolFor(words, s.settings.lessons);
   const { state, word, again } = drawNext(s.deck, pool, rng);
   const id = (s.questions.at(-1)?.id ?? 0) + 1;
   const q: Question = { id, word, options: pickOptions(word, pool, words, undefined, rng), again, chosen: null };
-  return { ...s, deck: state, questions: [...s.questions, q] };
+  return { ...s, deck: state, questions: [...s.questions, q].slice(-HISTORY_LIMIT) };
 }
 
 export function newSession(settings: Settings, words: readonly Word[], rng: Rng = Math.random): Session {
