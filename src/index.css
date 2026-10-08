@@ -183,6 +183,8 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
   font-weight: 800;
   font-size: 19px;
   cursor: pointer;
+  display: grid;
+  place-items: center;
 }
 
 /* Hover-capable, wider screens get a 2×2 grid. */

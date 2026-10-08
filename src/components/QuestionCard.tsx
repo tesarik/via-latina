@@ -70,8 +70,10 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
           );
         })}
         {answered && (
-          <button ref={nextRef} type="button" className="next" onClick={onNext}>
-            Další slovíčko
+          <button ref={nextRef} type="button" className="next" aria-label="Další slovíčko" onClick={onNext}>
+            <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+              <path d="M12 4v15M5 12l7 7 7-7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
           </button>
         )}
       </div>
