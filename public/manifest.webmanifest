@@ -1,0 +1,12 @@
+{
+  "name": "Via Latina",
+  "short_name": "Via Latina",
+  "description": "Latinská slovíčka na procvičení",
+  "lang": "cs",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f1ebe2",
+  "theme_color": "#8f2d22",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
