@@ -30,6 +30,7 @@ Každý build má vlastní verzi cache. Kdo má aplikaci otevřenou, uvidí po n
 - **Slovíčka 1** (`00-zakladni-slovicka.ts`) – běžná školní slovní zásoba, ke každému slovíčku latinská věta s překladem a poznámka.
 - **Slovíčka 2 a 3** (`01-slovicka-2.ts`, `02-slovicka-3.ts`) – další základní slovní zásoba bez slov, která už jsou ve Slovíčkách 1. České významy jsou zkrácené; ke každému slovíčku věta s překladem.
 - **Slovíčka 4** (`03-slovicka-4.ts`) – liturgická slova (mše, chorální zpěvy, litanie), která nejsou v sadách 1–3, seřazená od nejčastějších; ke každému slovíčku věta s překladem.
+- **Slovíčka 5 a 6** (`04-slovicka-5.ts`, `05-slovicka-6.ts`) – slova z modliteb, hymnů, žalmů a katechismových výčtů, která nejsou v sadách 1–4. V sadě 5 jsou běžnější slova (např. *ipse, vel, nemo, mensa*), v sadě 6 vzácnější; ke každému slovíčku věta s překladem.
 
 ## Přidání lekce
 
