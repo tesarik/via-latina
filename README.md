@@ -18,8 +18,8 @@ Pro nasazení do podsložky (např. GitHub Pages) nastav `BASE_PATH=/via-latina/
 ## Slovní zásoba
 
 - **Slovíčka 1** (`00-zakladni-slovicka.ts`) – běžná školní slovní zásoba, ke každému slovíčku latinská věta s překladem a poznámka.
-- **Slovíčka 2 a 3** (`01-slovicka-2.ts`, `02-slovicka-3.ts`) – další základní slovní zásoba bez slov, která už jsou ve Slovíčkách 1. České významy jsou zkrácené, slovesa v 1. osobě.
-- **Slovíčka 4** (`03-slovicka-4.ts`) – liturgická slova (mše, chorální zpěvy, litanie), která nejsou v sadách 1–3, seřazená od nejčastějších. Slovesa v 1. osobě.
+- **Slovíčka 2 a 3** (`01-slovicka-2.ts`, `02-slovicka-3.ts`) – další základní slovní zásoba bez slov, která už jsou ve Slovíčkách 1. České významy jsou zkrácené.
+- **Slovíčka 4** (`03-slovicka-4.ts`) – liturgická slova (mše, chorální zpěvy, litanie), která nejsou v sadách 1–3, seřazená od nejčastějších.
 
 ## Přidání lekce
 
@@ -31,14 +31,14 @@ import { lesson, n, v, a, o } from "./define";
 
 export default lesson("Slovíčka 4", [
   n("aqua", "aquae f.", "voda", ["Aqua vitae est.", "Voda je život.", "Odtud akvárium."]),
-  v("amo", "amāre, amāvī, amātum", "milovat"),
+  v("amo", "amāre, amāvī, amātum", "miluji"),
   a("bonus", "bona, bonum", "dobrý"),
   o("et", "spojka", "a"),
 ]);
 ```
 
 - `n` podstatné jméno, `v` sloveso, `a` přídavné jméno, `o` ostatní (příslovce, spojky, předložky, zájmena, číslovky). Špatné možnosti se vybírají ze stejného slovního druhu.
-- Parametry jsou: latinsky, gramatika (genitiv a rod, kmenové tvary…), česky.
+- Parametry jsou: latinsky, gramatika (genitiv a rod, kmenové tvary…), česky. Slovesa česky v 1. osobě („miluji“), stejně jako v ostatních sadách.
 - Poslední parametr je nepovinný: `[latinská věta, český překlad, poznámka]`. Zobrazí se po odpovědi. Poznámku můžeš vynechat.
 - Stejné slovíčko může být ve více lekcích. Když se procvičuje víc lekcí najednou, zeptá se jen jednou.
 

@@ -27,7 +27,7 @@ const entry =
 
 /** Podstatné jméno: n("aqua", "aquae f.", "voda", ["Aqua vitae est.", "Voda je život."]) */
 export const n = entry("n");
-/** Sloveso: v("amo", "amāre, amāvī, amātum", "milovat", […]) */
+/** Sloveso: v("amo", "amāre, amāvī, amātum", "miluji", […]) */
 export const v = entry("v");
 /** Přídavné jméno: a("bonus", "bona, bonum", "dobrý", […]) */
 export const a = entry("a");

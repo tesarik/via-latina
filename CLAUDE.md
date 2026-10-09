@@ -16,9 +16,9 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 ## File map
 
 - `src/lessons/` — vocabulary. Every file whose name starts with a digit is a lesson; `index.ts` loads them with `import.meta.glob` and the file name (without `.ts`) is the lesson id and sort order. `define.ts` has the `n`/`v`/`a`/`o` helpers (noun, verb, adjective, other) and `lesson(title, entries)`; an optional 4th argument `[ex, tr, remark?]` is the example shown after answering.
-  - `00-zakladni-slovicka.ts` "Slovíčka 1" (311 words, all with examples and remarks; verbs in the infinitive).
-  - `01-slovicka-2.ts`, `02-slovicka-3.ts` "Slovíčka 2/3" (~350 each, no examples yet; verbs in the 1st person sg., e.g. "přijímám"). Transcribed from OCR, so grammar info (vowel lengths, principal parts) may contain errors; fix them when the user reports any.
-  - `03-slovicka-4.ts` "Slovíčka 4" (274 liturgical words not in sets 1–3, most frequent first; verbs 1st person sg.). Lemmatised from Latin text, same caveat about possible grammar errors.
+  - `00-zakladni-slovicka.ts` "Slovíčka 1" (311 words, all with examples and remarks).
+  - `01-slovicka-2.ts`, `02-slovicka-3.ts` "Slovíčka 2/3" (~350 each, no examples yet). Transcribed from OCR, so grammar info (vowel lengths, principal parts) may contain errors; fix them when the user reports any.
+  - `03-slovicka-4.ts` "Slovíčka 4" (274 liturgical words not in sets 1–3, most frequent first). Lemmatised from Latin text, same caveat about possible grammar errors.
 - `src/quiz/engine.ts` — pure logic: `poolFor` (words of selected lessons, deduped by la+cz), `drawNext` (shuffled passes, missed words return after `RETRY_GAP`), `pickOptions` (distractors of the same word class, preferring the selected lessons, never two options with the same Latin or Czech).
 - `src/quiz/session.ts` — round state and `answer()`; keeps at most `HISTORY_LIMIT` (20) cards, ids keep counting and double as the word number.
 - `src/quiz/settings.ts` — selected lesson ids in `localStorage` (`vialatina_settings`; empty = all) and `toggleLesson` (last lesson can't be unticked; ticking all collapses to "all").
@@ -30,6 +30,7 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 ## Decisions from the user (keep them)
 
 - Calm pace: **no automatic advance**; after every answer the learner moves on with the ↓ button or by swiping. ↑ goes back with the same smooth scroll.
+- Czech meanings of **verbs are in the 1st person sg. in every set** ("miluji", "přijímám"), never the infinitive, so the form never gives the answer away.
 - Direction is **Latin → Czech only** (Czech → Latin was removed on request).
 - Look: **black and white only**, sans-serif (Atkinson Hyperlegible Next), large type. State is shown by fill/dashed border/strike-through, never colour.
 - Lessons are **vocabulary sets of roughly 300 words**, not textbook grammar chapters; titles are just "Slovíčka N".
