@@ -42,6 +42,13 @@ describe("lessons", () => {
   });
 });
 
+describe("examples", () => {
+  it("every word in every set has an example sentence with a translation", () => {
+    const missing = WORDS.filter((w) => !w.note).map((w) => `${w.lesson}: ${w.la}`);
+    expect(missing).toEqual([]);
+  });
+});
+
 describe("poolFor", () => {
   const words = [word("aqua", "voda", "01"), word("via", "cesta", "02"), word("aqua", "voda", "02")];
 

@@ -6,7 +6,7 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 
 - React 18 + Vite 6, TypeScript strict, ESLint flat config, Vitest for pure logic. Same setup as the sibling `latin-rosary` project (its `package-lock.json` was reused because a fresh `npm install` hit an npm arborist bug).
 - Plain CSS in `src/index.css` with tokens on `:root` (`--bg`, `--fg`, `--font`); dark mode via `prefers-color-scheme` swaps black/white.
-- Static site; `BASE_PATH` env var sets the Vite base. The user deploys `npm run build:web` (base `/via-latina/`) to jaroslavtesarik.cz/via-latina/ himself.
+- Static site; `BASE_PATH` env var sets the Vite base. The user deploys the output of `npm run build:web` (base `/via-latina/`) to jaroslavtesarik.cz/via-latina/ on their own.
 - PWA like `latin-rosary`: `public/manifest.webmanifest`, `public/icon.svg`, `public/sw.js` (cache name stamped per build by the `swVersion()` plugin in `vite.config.ts`; network-first for pages, cache-first for assets, lookups use `ignoreVary` because module scripts carry an Origin header). New builds wait for the user: `src/useServiceWorkerUpdate.ts` (copied from latin-rosary, plus it posts `CACHE_URLS` with everything the first visit loaded so the app is offline right away) + `src/components/UpdateToast.tsx`. The font is bundled via `@fontsource/atkinson-hyperlegible-next` (no Google Fonts) so it works offline.
 - Repo: github.com/tesarik/via-latina (public), branch `main`.
 
@@ -18,8 +18,8 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 
 - `src/lessons/` — vocabulary. Every file whose name starts with a digit is a lesson; `index.ts` loads them with `import.meta.glob` and the file name (without `.ts`) is the lesson id and sort order. `define.ts` has the `n`/`v`/`a`/`o` helpers (noun, verb, adjective, other) and `lesson(title, entries)`; an optional 4th argument `[ex, tr, remark?]` is the example shown after answering.
   - `00-zakladni-slovicka.ts` "Slovíčka 1" (311 words, all with examples and remarks).
-  - `01-slovicka-2.ts`, `02-slovicka-3.ts` "Slovíčka 2/3" (~350 each, no examples yet). Transcribed from OCR, so grammar info (vowel lengths, principal parts) may contain errors; fix them when the user reports any.
-  - `03-slovicka-4.ts` "Slovíčka 4" (274 liturgical words not in sets 1–3, most frequent first). Lemmatised from Latin text, same caveat about possible grammar errors.
+  - `01-slovicka-2.ts`, `02-slovicka-3.ts` "Slovíčka 2/3" (~350 each, with examples and remarks). Transcribed from OCR, so grammar info (vowel lengths, principal parts) may contain errors; fix them when the user reports any.
+  - `03-slovicka-4.ts` "Slovíčka 4" (274 liturgical words not in sets 1–3, most frequent first, with examples). Lemmatised from Latin text, same caveat about possible grammar errors.
 - `src/quiz/engine.ts` — pure logic: `poolFor` (words of selected lessons, deduped by la+cz), `drawNext` (shuffled passes, missed words return after `RETRY_GAP`), `pickOptions` (distractors of the same word class, preferring the selected lessons, never two options with the same Latin or Czech).
 - `src/quiz/progress.ts` — per-word Leitner box across visits (`vialatina_progress` in `localStorage`, key `pos:la:cz`); right answer +1 box (max 4), wrong → 0; known = box ≥ 3. `weightOf` feeds `drawNext`, which orders each pass with `weightedOrder` so missed words come early and known ones late (every word is still asked once per pass).
 - `src/quiz/session.ts` — round state (incl. `progress`) and `answer()`; keeps at most `HISTORY_LIMIT` (20) cards, ids keep counting and double as the word number.
