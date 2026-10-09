@@ -20,5 +20,10 @@ export default tseslint.config(
       "no-empty": ["error", { allowEmptyCatch: true }],
     },
   },
+  {
+    files: ["public/sw.js"],
+    languageOptions: { sourceType: "script", globals: globals.serviceworker },
+    rules: { "no-empty": ["error", { allowEmptyCatch: true }] },
+  },
   { files: ["*.config.{js,ts}"], languageOptions: { globals: globals.node } },
 );

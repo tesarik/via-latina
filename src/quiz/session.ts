@@ -1,4 +1,5 @@
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, type DeckState, type Rng } from "./engine";
+import { record, weightOf, type Progress } from "./progress";
 import type { Settings, Word } from "./types";
 
 export interface Question {
@@ -23,6 +24,8 @@ export interface Session {
   right: number;
   total: number;
   streak: number;
+  /** Per-word results across visits; decides which words come up first. */
+  progress: Progress;
 }
 
 /** How many cards the feed keeps, including the open one; older answered cards are dropped. */
@@ -30,14 +33,14 @@ export const HISTORY_LIMIT = 20;
 
 function withNextQuestion(s: Omit<Session, "questions"> & { questions: Question[] }, words: readonly Word[], rng: Rng): Session {
   const pool = poolFor(words, s.settings.lessons);
-  const { state, word, again } = drawNext(s.deck, pool, rng);
+  const { state, word, again } = drawNext(s.deck, pool, rng, (w) => weightOf(s.progress, w));
   const id = (s.questions.at(-1)?.id ?? 0) + 1;
   const q: Question = { id, word, options: pickOptions(word, pool, words, undefined, rng), again, chosen: null };
   return { ...s, deck: state, questions: [...s.questions, q].slice(-HISTORY_LIMIT) };
 }
 
-export function newSession(settings: Settings, words: readonly Word[], rng: Rng = Math.random): Session {
-  return withNextQuestion({ settings, deck: emptyDeck(), questions: [], right: 0, total: 0, streak: 0 }, words, rng);
+export function newSession(settings: Settings, words: readonly Word[], progress: Progress = {}, rng: Rng = Math.random): Session {
+  return withNextQuestion({ settings, deck: emptyDeck(), questions: [], right: 0, total: 0, streak: 0, progress }, words, rng);
 }
 
 export function isCorrect(q: Question): boolean {
@@ -57,6 +60,7 @@ export function answer(s: Session, id: number, choice: number, words: readonly W
     right: s.right + (ok ? 1 : 0),
     total: s.total + 1,
     streak: ok ? s.streak + 1 : 0,
+    progress: record(s.progress, q.word, ok),
   };
   return withNextQuestion(next, words, rng);
 }

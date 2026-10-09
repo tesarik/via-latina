@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, type DeckState } from "./engine";
+import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, weightedOrder, type DeckState } from "./engine";
+import { isKnown, KNOWN_BOX, record, weightOf, wordKey, type Progress } from "./progress";
 import { answer, HISTORY_LIMIT, isCorrect, newSession } from "./session";
 import { LESSONS, WORDS } from "../lessons";
 import { toggleLesson } from "./settings";
@@ -122,7 +123,7 @@ describe("pickOptions", () => {
 describe("session", () => {
   it("answers the open question once and queues the next", () => {
     const rng = seeded(5);
-    let s = newSession({ lessons: [] }, WORDS, rng);
+    let s = newSession({ lessons: [] }, WORDS, {}, rng);
     const q = s.questions[0];
     const right = q.options.indexOf(q.word);
     s = answer(s, q.id, right, WORDS, rng);
@@ -143,7 +144,7 @@ describe("session", () => {
 
   it("keeps only the latest cards while numbering keeps counting", () => {
     const rng = seeded(8);
-    let s = newSession({ lessons: [] }, WORDS, rng);
+    let s = newSession({ lessons: [] }, WORDS, {}, rng);
     for (let i = 0; i < 50; i++) {
       const q = s.questions.at(-1)!;
       s = answer(s, q.id, 0, WORDS, rng);
@@ -157,7 +158,7 @@ describe("session", () => {
   it("asks only words from the selected lesson", () => {
     const id = LESSONS[0].id;
     const rng = seeded(7);
-    let s = newSession({ lessons: [id] }, WORDS, rng);
+    let s = newSession({ lessons: [id] }, WORDS, {}, rng);
     for (let i = 0; i < 30; i++) {
       const q = s.questions.at(-1)!;
       expect(q.word.lesson).toBe(id);
@@ -184,5 +185,63 @@ describe("toggleLesson", () => {
   it("refuses to untick the only selected lesson", () => {
     expect(toggleLesson(["02"], "02", ids)).toBeNull();
     expect(toggleLesson([], "01", ["01"])).toBeNull();
+  });
+});
+
+describe("progress", () => {
+  const w = WORDS[0];
+
+  it("moves a word up on a right answer and back to zero on a wrong one", () => {
+    let p: Progress = {};
+    for (let i = 0; i < KNOWN_BOX; i++) p = record(p, w, true);
+    expect(isKnown(p, w)).toBe(true);
+    p = record(p, w, false);
+    expect(p[wordKey(w)]).toEqual({ box: 0, seen: KNOWN_BOX + 1, wrong: 1 });
+    expect(isKnown(p, w)).toBe(false);
+  });
+
+  it("weighs a missed word above an unseen one and a known one below both", () => {
+    const missed = record({}, w, false);
+    let known: Progress = {};
+    for (let i = 0; i < 4; i++) known = record(known, w, true);
+    expect(weightOf(missed, w)).toBeGreaterThan(weightOf({}, w));
+    expect(weightOf(known, w)).toBeLessThan(weightOf({}, w));
+  });
+
+  it("puts heavy items first most of the time but keeps every item", () => {
+    const items = ["light", "heavy", "mid"];
+    const weight = (s: string) => ({ light: 1, mid: 3, heavy: 20 })[s]!;
+    const rng = seeded(9);
+    let heavyFirst = 0;
+    for (let i = 0; i < 200; i++) {
+      const order = weightedOrder(items, weight, rng);
+      expect([...order].sort()).toEqual([...items].sort());
+      if (order[0] === "heavy") heavyFirst++;
+    }
+    expect(heavyFirst).toBeGreaterThan(140);
+  });
+
+  it("a session records answers and asks hard words early in the next pass", () => {
+    const lesson = LESSONS.at(-1)!;
+    const pool = poolFor(WORDS, [lesson.id]);
+    const hard = pool[5];
+    let progress: Progress = {};
+    for (const x of pool) progress = record(progress, x, x !== hard);
+    for (const x of pool) if (x !== hard) progress = record(record(progress, x, true), x, true);
+    let early = 0;
+    for (let seed = 1; seed <= 20; seed++) {
+      const s = newSession({ lessons: [lesson.id] }, WORDS, progress, seeded(seed));
+      let cur = s;
+      const asked: Word[] = [cur.questions[0].word];
+      for (let i = 0; i < 39; i++) {
+        const q = cur.questions.at(-1)!;
+        cur = answer(cur, q.id, q.options.indexOf(q.word), WORDS, seeded(seed + 100));
+        asked.push(cur.questions.at(-1)!.word);
+      }
+      // ~270 words in the set; the missed one should show up among the first 40.
+      if (asked.includes(hard)) early++;
+      expect(cur.progress[wordKey(cur.questions[0].word)]!.seen).toBeGreaterThan(0);
+    }
+    expect(early).toBeGreaterThanOrEqual(17);
   });
 });

@@ -2,6 +2,8 @@
 
 Klidný kvíz na latinská slovíčka, primárně pro mobil. Na obrazovce je vždy jedno slovíčko a čtyři významy. Po odpovědi se ukáže správný význam, příkladová věta a poznámka; na další slovíčko se přejde tlačítkem se šipkou dolů nebo posunutím, na předchozí šipkou nahoru. Chybně zodpovězené slovíčko se za pár kol vrátí. V nastavení se vybírá, ze kterých lekcí (sad slovíček) se procvičuje; klepnutím na skóre nebo sérii v záhlaví se ukáže, co znamenají.
 
+Aplikace si v telefonu pamatuje postup u každého slovíčka: správná odpověď ho posune o úroveň výš, chyba zpět na začátek. Těžká slovíčka proto přicházejí v kole dřív, ta, která umíš (3× správně za sebou), později. V nastavení je u každé sady vidět „umím x / y“ a postup se dá vymazat. Hra se dá přidat na plochu a po první návštěvě funguje i offline.
+
 ## Vývoj
 
 ```bash
@@ -13,7 +15,15 @@ npm run lint
 npm run build      # statický build do dist/
 ```
 
-Pro nasazení do podsložky (např. GitHub Pages) nastav `BASE_PATH=/via-latina/ npm run build`.
+## Nasazení
+
+```bash
+npm run build:web   # build pro podsložku /via-latina/ (BASE_PATH=/via-latina/)
+```
+
+Obsah složky `dist/` nahraj na web do `/via-latina/` (např. `jaroslavtesarik.cz/via-latina/`). Nic dalšího server nepotřebuje, jen musí soubory servírovat beze změny; `sw.js` musí ležet přímo ve `/via-latina/`. Web musí běžet přes HTTPS, jinak se service worker (offline, přidání na plochu) nezapne.
+
+Každý build má vlastní verzi cache. Kdo má aplikaci otevřenou, uvidí po nasazení dole lištu „Je k dispozici nová verze“; po klepnutí na Aktualizovat se načte nová verze. Pro jinou podsložku nastav `BASE_PATH=/jina-cesta/ npm run build`.
 
 ## Slovní zásoba
 
@@ -51,4 +61,6 @@ Po přidání souboru spusť `npm test`. Test zkontroluje, že žádné pole nen
 - `src/quiz/session.ts` – stav jednoho kola a vyhodnocení odpovědi
 - `src/quiz/settings.ts` – uložený výběr lekcí (`localStorage`)
 - `src/App.tsx` – scrollovací feed (drží posledních 20 karet), šipky nahoru/dolů, klávesnice
-- `src/components/` – karta slovíčka, nastavení, vysvětlivky v záhlaví
+- `src/quiz/progress.ts` – postup u jednotlivých slovíček (`localStorage`) a váhy pro pořadí
+- `src/useServiceWorkerUpdate.ts`, `public/sw.js` – offline a nabídka aktualizace
+- `src/components/` – karta slovíčka, nastavení, vysvětlivky v záhlaví, lišta s aktualizací

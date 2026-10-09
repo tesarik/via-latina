@@ -6,12 +6,13 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 
 - React 18 + Vite 6, TypeScript strict, ESLint flat config, Vitest for pure logic. Same setup as the sibling `latin-rosary` project (its `package-lock.json` was reused because a fresh `npm install` hit an npm arborist bug).
 - Plain CSS in `src/index.css` with tokens on `:root` (`--bg`, `--fg`, `--font`); dark mode via `prefers-color-scheme` swaps black/white.
-- Static site; `BASE_PATH` env var sets the Vite base for sub-path hosting. Manifest + icon exist, no service worker (no offline yet).
+- Static site; `BASE_PATH` env var sets the Vite base. The user deploys `npm run build:web` (base `/via-latina/`) to jaroslavtesarik.cz/via-latina/ himself.
+- PWA like `latin-rosary`: `public/manifest.webmanifest`, `public/icon.svg`, `public/sw.js` (cache name stamped per build by the `swVersion()` plugin in `vite.config.ts`; network-first for pages, cache-first for assets, lookups use `ignoreVary` because module scripts carry an Origin header). New builds wait for the user: `src/useServiceWorkerUpdate.ts` (copied from latin-rosary, plus it posts `CACHE_URLS` with everything the first visit loaded so the app is offline right away) + `src/components/UpdateToast.tsx`. The font is bundled via `@fontsource/atkinson-hyperlegible-next` (no Google Fonts) so it works offline.
 - Repo: github.com/tesarik/via-latina (public), branch `main`.
 
 ## Commands
 
-`npm run dev` · `npm test` · `npm run typecheck` · `npm run lint` · `npm run build`. Run typecheck, lint and test before committing.
+`npm run dev` · `npm test` · `npm run typecheck` · `npm run lint` · `npm run build` · `npm run build:web` (for the website) · `npx vite preview --base /via-latina/` to try the production build incl. offline. Run typecheck, lint and test before committing.
 
 ## File map
 
@@ -20,7 +21,8 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
   - `01-slovicka-2.ts`, `02-slovicka-3.ts` "Slovíčka 2/3" (~350 each, no examples yet). Transcribed from OCR, so grammar info (vowel lengths, principal parts) may contain errors; fix them when the user reports any.
   - `03-slovicka-4.ts` "Slovíčka 4" (274 liturgical words not in sets 1–3, most frequent first). Lemmatised from Latin text, same caveat about possible grammar errors.
 - `src/quiz/engine.ts` — pure logic: `poolFor` (words of selected lessons, deduped by la+cz), `drawNext` (shuffled passes, missed words return after `RETRY_GAP`), `pickOptions` (distractors of the same word class, preferring the selected lessons, never two options with the same Latin or Czech).
-- `src/quiz/session.ts` — round state and `answer()`; keeps at most `HISTORY_LIMIT` (20) cards, ids keep counting and double as the word number.
+- `src/quiz/progress.ts` — per-word Leitner box across visits (`vialatina_progress` in `localStorage`, key `pos:la:cz`); right answer +1 box (max 4), wrong → 0; known = box ≥ 3. `weightOf` feeds `drawNext`, which orders each pass with `weightedOrder` so missed words come early and known ones late (every word is still asked once per pass).
+- `src/quiz/session.ts` — round state (incl. `progress`) and `answer()`; keeps at most `HISTORY_LIMIT` (20) cards, ids keep counting and double as the word number.
 - `src/quiz/settings.ts` — selected lesson ids in `localStorage` (`vialatina_settings`; empty = all) and `toggleLesson` (last lesson can't be unticked; ticking all collapses to "all").
 - `src/quiz/types.ts` — `Word`, `Lesson`, `Note`, `Settings`.
 - `src/App.tsx` — the snap-scrolling feed. Remembers which card is on screen and restores it when old cards are dropped (`overflow-anchor: none`, feed is `position: relative` so `offsetTop` is feed-relative). Keyboard: 1–4 answer the open card if it is on screen, Enter/↓ go to it.

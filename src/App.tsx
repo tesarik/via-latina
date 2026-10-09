@@ -2,24 +2,37 @@ import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState }
 import { LESSONS, WORDS } from "./lessons";
 import { answer, newSession, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
+import { loadProgress, saveProgress } from "./quiz/progress";
+import { useServiceWorkerUpdate } from "./useServiceWorkerUpdate";
+import UpdateToast from "./components/UpdateToast";
 import type { Settings } from "./quiz/types";
 import QuestionCard from "./components/QuestionCard";
 import SettingsSheet from "./components/SettingsSheet";
 import StatTip from "./components/StatTip";
 
-type Action = { type: "answer"; id: number; choice: number } | { type: "restart"; settings: Settings };
+type Action =
+  | { type: "answer"; id: number; choice: number }
+  | { type: "restart"; settings: Settings }
+  | { type: "resetProgress" };
 
 function reducer(s: Session, a: Action): Session {
   switch (a.type) {
     case "answer":
       return answer(s, a.id, a.choice, WORDS);
     case "restart":
-      return newSession(a.settings, WORDS);
+      return newSession(a.settings, WORDS, s.progress);
+    case "resetProgress":
+      return newSession(s.settings, WORDS, {});
   }
 }
 
 export default function App() {
-  const [session, dispatch] = useReducer(reducer, undefined, () => newSession(loadSettings(LESSONS.map((l) => l.id)), WORDS));
+  const [session, dispatch] = useReducer(reducer, undefined, () =>
+    newSession(loadSettings(LESSONS.map((l) => l.id)), WORDS, loadProgress()),
+  );
+  const { updateReady, applyUpdate, dismissUpdate } = useServiceWorkerUpdate();
+
+  useEffect(() => saveProgress(session.progress), [session.progress]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [tip, setTip] = useState<"score" | "streak" | null>(null);
   const closeTip = useCallback(() => setTip(null), []);
@@ -135,8 +148,18 @@ export default function App() {
       </main>
 
       {settingsOpen && (
-        <SettingsSheet settings={session.settings} onChange={changeSettings} onClose={() => setSettingsOpen(false)} />
+        <SettingsSheet
+          settings={session.settings}
+          progress={session.progress}
+          onChange={changeSettings}
+          onResetProgress={() => {
+            dispatch({ type: "resetProgress" });
+            feedRef.current?.scrollTo({ top: 0 });
+          }}
+          onClose={() => setSettingsOpen(false)}
+        />
       )}
+      {updateReady && <UpdateToast onUpdate={applyUpdate} onDismiss={dismissUpdate} />}
     </div>
   );
 }

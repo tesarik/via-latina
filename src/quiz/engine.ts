@@ -17,6 +17,17 @@ export interface DeckState {
 
 export const emptyDeck = (): DeckState => ({ deck: [], retry: [], served: 0, last: null });
 
+/**
+ * Random order in which items with a higher weight tend to come first
+ * (Efraimidis–Spirakis weighted sampling without replacement).
+ */
+export function weightedOrder<T>(items: readonly T[], weight: (item: T) => number, rng: Rng = Math.random): T[] {
+  return items
+    .map((item) => ({ item, key: Math.pow(rng(), 1 / Math.max(weight(item), 1e-6)) }))
+    .sort((a, b) => b.key - a.key)
+    .map((x) => x.item);
+}
+
 export function shuffle<T>(items: readonly T[], rng: Rng = Math.random): T[] {
   const a = [...items];
   for (let i = a.length - 1; i > 0; i--) {
@@ -41,11 +52,15 @@ export function poolFor(words: readonly Word[], lessons: readonly string[]): Wor
   });
 }
 
-/** Next word to ask: a due retry first, otherwise the next word of the shuffled pass. */
+/**
+ * Next word to ask: a due retry first, otherwise the next word of the current
+ * pass. Each pass asks every word once; with `weight`, heavier words come earlier.
+ */
 export function drawNext(
   state: DeckState,
   pool: readonly Word[],
   rng: Rng = Math.random,
+  weight?: (w: Word) => number,
 ): { state: DeckState; word: Word; again: boolean } {
   const served = state.served + 1;
   const ri = state.retry.findIndex((r) => r.due <= served);
@@ -58,7 +73,9 @@ export function drawNext(
   if (deck.length === 0) {
     // New pass; never open it with the word that just closed the previous one.
     const fresh = pool.filter((w) => w !== state.last);
-    deck = shuffle(fresh.length ? fresh : pool, rng);
+    const words = fresh.length ? fresh : pool;
+    // The deck is drawn from the end, so put the first word to ask last.
+    deck = weight ? weightedOrder(words, weight, rng).reverse() : shuffle(words, rng);
   }
   const word = deck[deck.length - 1];
   return { state: { ...state, deck: deck.slice(0, -1), served, last: word }, word, again: false };
