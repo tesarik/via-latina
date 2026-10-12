@@ -28,7 +28,15 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - `src/quiz/types.ts` — `Word`, `Lesson`, `Note`, `Settings`.
 - `src/App.tsx` — the snap-scrolling feed. Remembers which card is on screen and restores it when old cards are dropped (`overflow-anchor: none`, feed is `position: relative` so `offsetTop` is feed-relative). Keyboard: 1–4 answer the open card if it is on screen, Enter/↓ go to it.
 - `src/components/QuestionCard.tsx` (card, ↑ previous / ↓ next buttons), `SettingsSheet.tsx` (bottom sheet with lesson checkboxes), `StatTip.tsx` (tap-to-explain bubble for the header figures).
-- `src/quiz/engine.test.ts` — all tests, including lesson-data checks (no empty fields, no duplicate pos+headword within a lesson).
+- `src/quiz/engine.test.ts` — all tests, including lesson-data checks (no empty fields, no duplicate pos+headword within a lesson, every word has an example sentence with translation).
+
+## Adding vocabulary from a Latin text (how sets 4–6 were made)
+
+1. `pdftotext -layout` the PDF; keep only Latin lines (drop lines with Czech háčky/ů/ý or Czech function words); join words split by hyphen/line break (chant notation splits syllables: "Ie-su").
+2. Count normalised forms (lowercase, no accents, æ→ae, j→i), lemmatise them (subagents, form → lemma + pos; mark proper names and non-Latin junk), sum counts per lemma.
+3. Drop lemmas already in any set (compare normalised headwords), proper names, fragments and very specialised terms.
+4. Write entries (info with macrons, Czech meaning with verbs in 1st person, example sentence preferably a real quote with reference, short remark) in parallel subagents to JSONL, then validate (duplicates vs existing `pos:la`, verbs not in infinitive) and generate the lesson file. Order: most useful/frequent first; split into sets of ~300.
+5. `npm test`, update README "Slovní zásoba" and this file, commit and push.
 
 ## Decisions from the user (keep them)
 
@@ -36,7 +44,8 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - Czech meanings of **verbs are in the 1st person sg. in every set** ("miluji", "přijímám"), never the infinitive, so the form never gives the answer away.
 - Direction is **Latin → Czech only** (Czech → Latin was removed on request).
 - Look: **black and white only**, sans-serif (Atkinson Hyperlegible Next), large type. State is shown by fill/dashed border/strike-through, never colour.
-- Lessons are **vocabulary sets of roughly 300 words**, not textbook grammar chapters; titles are just "Slovíčka N".
+- Lessons are **vocabulary sets of roughly 300 words**, not textbook grammar chapters; titles are just "Slovíčka N". A new set leaves out words already in earlier sets.
+- **Every word has an example sentence** with Czech translation (enforced by a test); remarks are optional. Examples/notes are AI-written; the user reports errors and they get fixed.
 - **Do not mention the source** of Slovíčka 2/3 anywhere in the repo (README, comments, docs).
 - Header: "správně x/y" and "série" explain themselves via tap tooltips; keep the streak tooltip short.
 - Commit and push to `main` after each finished change; end commit messages with the Co-Authored-By line.

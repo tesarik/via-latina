@@ -37,23 +37,23 @@ Každý build má vlastní verzi cache. Kdo má aplikaci otevřenou, uvidí po n
 Každá sada slovíček (v aplikaci „lekce“) je jeden soubor ve složce `src/lessons/`. Název souboru začíná číslem, které určuje pořadí v nastavení (`00-…`, `01-…`, `02-…`). Zbytek názvu je jen pro orientaci.
 
 ```ts
-// src/lessons/03-slovicka-4.ts
+// src/lessons/06-slovicka-7.ts
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Slovíčka 4", [
+export default lesson("Slovíčka 7", [
   n("aqua", "aquae f.", "voda", ["Aqua vitae est.", "Voda je život.", "Odtud akvárium."]),
-  v("amo", "amāre, amāvī, amātum", "miluji"),
-  a("bonus", "bona, bonum", "dobrý"),
-  o("et", "spojka", "a"),
+  v("amo", "amāre, amāvī, amātum", "miluji", ["Deum amo.", "Miluji Boha."]),
+  a("bonus", "bona, bonum", "dobrý", ["Deus bonus est.", "Bůh je dobrý."]),
+  o("et", "spojka", "a", ["Pater et Filius", "Otec a Syn"]),
 ]);
 ```
 
 - `n` podstatné jméno, `v` sloveso, `a` přídavné jméno, `o` ostatní (příslovce, spojky, předložky, zájmena, číslovky). Špatné možnosti se vybírají ze stejného slovního druhu.
 - Parametry jsou: latinsky, gramatika (genitiv a rod, kmenové tvary…), česky. Slovesa česky v 1. osobě („miluji“), stejně jako v ostatních sadách.
 - Poslední parametr je `[latinská věta, český překlad, poznámka]`, zobrazí se po odpovědi. Věta s překladem je povinná (hlídá ji test), poznámku můžeš vynechat.
-- Stejné slovíčko může být ve více lekcích. Když se procvičuje víc lekcí najednou, zeptá se jen jednou.
+- Stejné slovíčko může být ve více lekcích. Když se procvičuje víc lekcí najednou, zeptá se jen jednou. Nové sady ale zatím slova z dřívějších sad neopakují.
 
-Po přidání souboru spusť `npm test`. Test zkontroluje, že žádné pole není prázdné a že v lekci není slovíčko dvakrát.
+Po přidání souboru spusť `npm test`. Test zkontroluje, že žádné pole není prázdné, že každé slovíčko má větu s překladem a že v lekci není slovíčko dvakrát.
 
 ## Struktura
 
@@ -61,6 +61,7 @@ Po přidání souboru spusť `npm test`. Test zkontroluje, že žádné pole nen
 - `src/quiz/engine.ts` – čistá logika: výběr slovíček z lekcí, míchání, opakování chyb, výběr možností (bez Reactu, s testy)
 - `src/quiz/session.ts` – stav jednoho kola a vyhodnocení odpovědi
 - `src/quiz/settings.ts` – uložený výběr lekcí (`localStorage`)
+- `src/quiz/types.ts` – typy (slovíčko, lekce, poznámka, nastavení)
 - `src/App.tsx` – scrollovací feed (drží posledních 20 karet), šipky nahoru/dolů, klávesnice
 - `src/quiz/progress.ts` – postup u jednotlivých slovíček (`localStorage`) a váhy pro pořadí
 - `src/useServiceWorkerUpdate.ts`, `public/sw.js` – offline a nabídka aktualizace
