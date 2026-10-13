@@ -2,7 +2,7 @@
 
 Klidný kvíz na latinská slovíčka, primárně pro mobil. Na obrazovce je vždy jedno slovíčko a čtyři významy. Po odpovědi se ukáže správný význam, příkladová věta a poznámka; na další slovíčko se přejde tlačítkem se šipkou dolů nebo posunutím, na předchozí šipkou nahoru. Chybně zodpovězené slovíčko se za pár kol vrátí. V nastavení se vybírá, ze kterých lekcí (sad slovíček) se procvičuje; klepnutím na skóre nebo sérii v záhlaví se ukáže, co znamenají.
 
-Aplikace si v telefonu pamatuje postup u každého slovíčka: správná odpověď ho posune o úroveň výš, chyba zpět na začátek. Těžká slovíčka proto přicházejí v kole dřív, ta, která umíš (3× správně za sebou), později. V nastavení je u každé sady vidět „umím x / y“ a postup se dá vymazat. Hra se dá přidat na plochu a po první návštěvě funguje i offline.
+Aplikace si v telefonu pamatuje postup u každého slovíčka: správná odpověď ho posune o úroveň výš, chyba zpět na začátek. Těžká slovíčka proto přicházejí v kole dřív, ta, která umíš (3× správně za sebou), později. V nastavení je u každé sady vidět „umím x / y“ a postup se dá vymazat. Postup se dá uložit do souboru (na telefonu přes nabídku Sdílet, např. do Souborů nebo na Disk) a z něj obnovit. Hodí se to hlavně na iPhonu: Safari maže data webu, který týden neotevřeš (u hry přidané na plochu ne). Hra se dá přidat na plochu a po první návštěvě funguje i offline.
 
 ## Vývoj
 

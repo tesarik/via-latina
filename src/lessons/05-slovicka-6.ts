@@ -81,7 +81,7 @@ export default lesson("Slovíčka 6", [
   n("perditio", "perditiōnis f.", "zkáza, zatracení", ["Qui ad perditionem animarum pervagantur in mundo.", "Kteří ke zkáze duší obcházejí světem.", "Z modlitby ke sv. Michaelovi."]),
   a("perpes", "gen. perpetis", "trvalý, ustavičný", ["Virtute firmans perpeti.", "Posiluj stálou silou.", "Z Veni Creator. Srov. perpetuus."]),
   o("postmodum", "příslovce", "potom, později", ["Prior postmodum fratres aspergit aqua benedicta.", "Převor potom pokropí bratry svěcenou vodou."]),
-  n("uber", "uberis n.", "prs, ňadro", ["Beatus venter qui te portavit, et ubera quae suxisti.", "Blažený život, který tě nosil, a prsy, které jsi sál.", "Lk 11,27. Též adj. ūber = hojný."]),
+  n("uber", "ūberis n.", "prs, ňadro", ["Beatus venter qui te portavit, et ubera quae suxisti.", "Blažený život, který tě nosil, a prsy, které jsi sál.", "Lk 11,27. Též adj. ūber = hojný."]),
   n("varietas", "varietātis f.", "rozmanitost, proměnlivost", ["Inter omnes vitae huius varietates.", "Uprostřed všech proměn tohoto života.", "Česky varieta."]),
   n("visitatio", "visitātiōnis f.", "navštívení", ["Visitatio Beatae Mariae Virginis", "Navštívení Panny Marie", "Od visito (navštěvuji); česky vizitace."]),
   n("acedia", "acēdiae f.", "duchovní lenost, malátnost", ["Pigritia seu acedia.", "Lenost neboli duchovní malátnost.", "Jeden ze sedmi hlavních hříchů. Z řečtiny."]),

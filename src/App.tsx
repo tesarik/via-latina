@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState }
 import { LESSONS, WORDS } from "./lessons";
 import { answer, newSession, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
-import { loadProgress, saveProgress } from "./quiz/progress";
+import { loadProgress, saveProgress, type Progress } from "./quiz/progress";
 import { useServiceWorkerUpdate } from "./useServiceWorkerUpdate";
 import UpdateToast from "./components/UpdateToast";
 import type { Settings } from "./quiz/types";
@@ -13,7 +13,8 @@ import StatTip from "./components/StatTip";
 type Action =
   | { type: "answer"; id: number; choice: number }
   | { type: "restart"; settings: Settings }
-  | { type: "resetProgress" };
+  | { type: "resetProgress" }
+  | { type: "setProgress"; progress: Progress };
 
 function reducer(s: Session, a: Action): Session {
   switch (a.type) {
@@ -23,6 +24,8 @@ function reducer(s: Session, a: Action): Session {
       return newSession(a.settings, WORDS, s.progress);
     case "resetProgress":
       return newSession(s.settings, WORDS, {});
+    case "setProgress":
+      return newSession(s.settings, WORDS, a.progress);
   }
 }
 
@@ -154,6 +157,10 @@ export default function App() {
           onChange={changeSettings}
           onResetProgress={() => {
             dispatch({ type: "resetProgress" });
+            feedRef.current?.scrollTo({ top: 0 });
+          }}
+          onRestoreProgress={(progress) => {
+            dispatch({ type: "setProgress", progress });
             feedRef.current?.scrollTo({ top: 0 });
           }}
           onClose={() => setSettingsOpen(false)}

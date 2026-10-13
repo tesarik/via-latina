@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, weightedOrder, type DeckState } from "./engine";
-import { isKnown, KNOWN_BOX, record, weightOf, wordKey, type Progress } from "./progress";
+import { exportProgress, importProgress, isKnown, KNOWN_BOX, record, weightOf, wordKey, type Progress } from "./progress";
 import { answer, HISTORY_LIMIT, isCorrect, newSession } from "./session";
 import { LESSONS, WORDS } from "../lessons";
 import { toggleLesson } from "./settings";
@@ -250,5 +250,15 @@ describe("progress", () => {
       expect(cur.progress[wordKey(cur.questions[0].word)]!.seen).toBeGreaterThan(0);
     }
     expect(early).toBeGreaterThanOrEqual(17);
+  });
+
+  it("restores progress from a backup and rejects anything else", () => {
+    const p = record(record({}, w, true), WORDS[1], false);
+    expect(importProgress(exportProgress(p))).toEqual(p);
+    expect(importProgress(JSON.stringify(p))).toEqual(p);
+    expect(importProgress("not json")).toBeNull();
+    expect(importProgress("{}")).toBeNull();
+    expect(importProgress(JSON.stringify({ app: "other", progress: p }))).toBeNull();
+    expect(importProgress(JSON.stringify([1, 2]))).toBeNull();
   });
 });

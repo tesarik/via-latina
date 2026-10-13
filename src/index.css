@@ -229,6 +229,8 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
   display: flex;
   flex-direction: column;
   gap: 18px;
+  max-height: 100dvh;
+  overflow-y: auto;
   animation: rise 0.25s ease-out;
 }
 .grabber { width: 40px; height: 4px; border-radius: 2px; background: var(--fg); align-self: center; }
@@ -286,6 +288,8 @@ legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em
   font-size: 17px;
   cursor: pointer;
 }
+.backup { display: flex; gap: 10px; }
+.backup .reset { flex: 1; }
 .reset.armed { border-style: dashed; font-weight: 800; }
 .done {
   min-height: 54px;

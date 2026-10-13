@@ -42,21 +42,48 @@ export function weightOf(p: Progress, w: Word): number {
 
 const KEY = "vialatina_progress";
 
+/** Checks stored or imported data and keeps only well-formed records; null when it isn't a progress map at all. */
+export function parseProgress(raw: unknown): Progress | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const out: Record<string, WordStat> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    const s = v as Partial<WordStat> | null;
+    if (s && Number.isFinite(s.box) && Number.isFinite(s.seen) && Number.isFinite(s.wrong)) {
+      out[k] = { box: Math.max(0, Math.min(MAX_BOX, Math.trunc(s.box!))), seen: s.seen!, wrong: s.wrong! };
+    }
+  }
+  return out;
+}
+
 export function loadProgress(): Progress {
   try {
-    const raw = JSON.parse(localStorage.getItem(KEY) ?? "null") as unknown;
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-    const out: Record<string, WordStat> = {};
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-      const s = v as Partial<WordStat> | null;
-      if (s && Number.isFinite(s.box) && Number.isFinite(s.seen) && Number.isFinite(s.wrong)) {
-        out[k] = { box: Math.max(0, Math.min(MAX_BOX, Math.trunc(s.box!))), seen: s.seen!, wrong: s.wrong! };
-      }
-    }
-    return out;
+    return parseProgress(JSON.parse(localStorage.getItem(KEY) ?? "null")) ?? {};
   } catch {
     return {};
   }
+}
+
+const BACKUP_APP = "via-latina";
+
+/** Backup file contents. Safari on iPhone may wipe site storage after a week without a visit, so the learner can keep a copy. */
+export function exportProgress(p: Progress, date = new Date()): string {
+  return JSON.stringify({ app: BACKUP_APP, version: 1, date: date.toISOString(), progress: p });
+}
+
+/** Reads a backup file (or a bare progress map); null when the text isn't one. */
+export function importProgress(text: string): Progress | null {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (raw && typeof raw === "object" && "progress" in raw) {
+    if ((raw as { app?: unknown }).app !== BACKUP_APP) return null;
+    raw = (raw as { progress: unknown }).progress;
+  }
+  const p = parseProgress(raw);
+  return p && Object.keys(p).length > 0 ? p : null;
 }
 
 export function saveProgress(p: Progress): void {
