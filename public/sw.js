@@ -1,6 +1,7 @@
 // __SW_VERSION__ is replaced at build time (see vite.config.ts). In dev mode the
 // SW is not registered, so the literal placeholder never reaches a browser.
-const CACHE = "vialatina-__SW_VERSION__";
+const PREFIX = "vialatina-";
+const CACHE = PREFIX + "__SW_VERSION__";
 
 // No skipWaiting() on install: a new build waits until the learner accepts the
 // in-app "new version" prompt, which posts SKIP_WAITING. (On a first-ever
@@ -28,7 +29,10 @@ self.addEventListener("message", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     Promise.all([
-      caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))),
+      // Other apps on the same domain share this cache storage: drop only our own old builds.
+      caches.keys().then((keys) =>
+        Promise.all(keys.filter((k) => k.startsWith(PREFIX) && k !== CACHE).map((k) => caches.delete(k))),
+      ),
       self.clients.claim(),
     ]),
   );
