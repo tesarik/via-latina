@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, weightedOrder, type DeckState } from "./engine";
-import { exportProgress, importProgress, isKnown, KNOWN_BOX, record, weightOf, wordKey, type Progress } from "./progress";
+import { exportProgress, importProgress, isKnown, isWeak, KNOWN_BOX, record, weightOf, wordKey, type Progress } from "./progress";
 import { answer, HISTORY_LIMIT, isCorrect, newSession } from "./session";
 import { LESSONS, WORDS } from "../lessons";
 import { toggleLesson } from "./settings";
@@ -260,5 +260,30 @@ describe("progress", () => {
     expect(importProgress("{}")).toBeNull();
     expect(importProgress(JSON.stringify({ app: "other", progress: p }))).toBeNull();
     expect(importProgress(JSON.stringify([1, 2]))).toBeNull();
+  });
+
+  it("the weak round asks only missed words, then carries on with everything", () => {
+    const id = LESSONS[0].id;
+    const pool = poolFor(WORDS, [id]);
+    const missed = [pool[3], pool[10]];
+    let p: Progress = {};
+    for (const x of missed) p = record(p, x, false);
+    p = record(p, pool[20], true);
+    expect(missed.every((x) => isWeak(p, x))).toBe(true);
+    expect(isWeak(p, pool[20])).toBe(false);
+
+    const rng = seeded(11);
+    let s = newSession({ lessons: [id] }, WORDS, p, rng, "weak");
+    const asked: Word[] = [];
+    for (let i = 0; i < 12; i++) {
+      const q = s.questions.at(-1)!;
+      asked.push(q.word);
+      expect(q.options).toHaveLength(4);
+      s = answer(s, q.id, q.options.indexOf(q.word), WORDS, rng);
+    }
+    // Three right answers make both words known; after that the whole lesson is asked.
+    expect(asked.slice(0, 6).every((w) => missed.includes(w))).toBe(true);
+    expect(s.focus).toBe("all");
+    expect(asked.some((w) => !missed.includes(w))).toBe(true);
   });
 });

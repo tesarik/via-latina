@@ -45,7 +45,16 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
   border-bottom: 2px solid var(--fg);
   position: relative;
 }
-.brand { font-weight: 800; font-size: 20px; }
+.brand {
+  font-weight: 800; font-size: 20px;
+  background: none; border: 0; padding: 10px 0; cursor: pointer;
+}
+.mode {
+  font-size: 15px;
+  padding: 2px 10px;
+  border: 1.5px solid var(--fg);
+  border-radius: 999px;
+}
 .stats {
   margin-left: auto;
   display: flex;
@@ -300,6 +309,30 @@ legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em
   font-weight: 800;
   cursor: pointer;
 }
+
+/* ---- start screen (covers the feed, which stays mounted underneath) ---- */
+.start {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+  padding: calc(env(safe-area-inset-top, 0px) + 12vh) 16px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  overflow-y: auto;
+}
+.start h1 { margin: 0; font-size: 46px; font-weight: 800; letter-spacing: 0.01em; }
+.start-sub { margin: 8px 0 0; font-size: 19px; }
+.start-progress p { margin: 0; font-size: 20px; }
+.start-progress b { font-weight: 800; }
+.bar { height: 10px; margin: 12px 0; border: 2px solid var(--fg); border-radius: 999px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--fg); }
+.start-progress .start-sel { font-size: 16px; }
+.start-actions { display: flex; flex-direction: column; gap: 12px; }
 
 @keyframes fade { from { opacity: 0; } }
 @keyframes rise { from { transform: translateY(100%); } }

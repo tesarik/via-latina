@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { LESSONS, WORDS } from "./lessons";
-import { answer, newSession, type Session } from "./quiz/session";
+import { answer, newSession, type Focus, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
 import { loadProgress, saveProgress, type Progress } from "./quiz/progress";
 import { useServiceWorkerUpdate } from "./useServiceWorkerUpdate";
@@ -9,10 +9,11 @@ import type { Settings } from "./quiz/types";
 import QuestionCard from "./components/QuestionCard";
 import SettingsSheet from "./components/SettingsSheet";
 import StatTip from "./components/StatTip";
+import StartScreen from "./components/StartScreen";
 
 type Action =
   | { type: "answer"; id: number; choice: number }
-  | { type: "restart"; settings: Settings }
+  | { type: "restart"; settings: Settings; focus?: Focus }
   | { type: "resetProgress" }
   | { type: "setProgress"; progress: Progress };
 
@@ -21,7 +22,7 @@ function reducer(s: Session, a: Action): Session {
     case "answer":
       return answer(s, a.id, a.choice, WORDS);
     case "restart":
-      return newSession(a.settings, WORDS, s.progress);
+      return newSession(a.settings, WORDS, s.progress, Math.random, a.focus);
     case "resetProgress":
       return newSession(s.settings, WORDS, {});
     case "setProgress":
@@ -37,6 +38,8 @@ export default function App() {
 
   useEffect(() => saveProgress(session.progress), [session.progress]);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // Every launch opens on the start screen; the feed stays mounted underneath so it keeps its place.
+  const [onStart, setOnStart] = useState(true);
   const [tip, setTip] = useState<"score" | "streak" | null>(null);
   const closeTip = useCallback(() => setTip(null), []);
   const feedRef = useRef<HTMLElement>(null);
@@ -81,7 +84,7 @@ export default function App() {
   // Keyboard for desktop: 1–4 answer, Enter / ↓ moves to the open word.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (settingsOpen) return;
+      if (settingsOpen || onStart) return;
       const n = Number.parseInt(e.key, 10);
       if (n >= 1 && n <= current.options.length) {
         if (isCurrentInView()) dispatch({ type: "answer", id: current.id, choice: n - 1 });
@@ -102,10 +105,21 @@ export default function App() {
     feedRef.current?.scrollTo({ top: 0 });
   };
 
+  const startRound = (focus: Focus) => {
+    if (focus !== session.focus || focus === "weak") {
+      dispatch({ type: "restart", settings: session.settings, focus });
+      feedRef.current?.scrollTo({ top: 0 });
+    }
+    setOnStart(false);
+  };
+
   return (
     <div className="app">
       <header className="topbar">
-        <span className="brand">Via Latina</span>
+        <button type="button" className="brand" aria-label="Úvodní obrazovka" onClick={() => setOnStart(true)}>
+          Via Latina
+        </button>
+        {session.focus === "weak" && <span className="mode">chybná</span>}
         <span className="stats" aria-live="polite">
           <StatTip
             open={tip === "score"}
@@ -150,6 +164,16 @@ export default function App() {
         ))}
       </main>
 
+      {onStart && (
+        <StartScreen
+          settings={session.settings}
+          progress={session.progress}
+          answeredNow={session.total}
+          onContinue={() => startRound("all")}
+          onWeak={() => startRound("weak")}
+          onLessons={() => setSettingsOpen(true)}
+        />
+      )}
       {settingsOpen && (
         <SettingsSheet
           settings={session.settings}

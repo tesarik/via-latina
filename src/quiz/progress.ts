@@ -31,6 +31,12 @@ export function record(p: Progress, w: Word, ok: boolean): Progress {
 
 export const isKnown = (p: Progress, w: Word) => (p[wordKey(w)]?.box ?? 0) >= KNOWN_BOX;
 
+/** Missed at least once and not yet known again: what "Opakovat chybná" practises. */
+export function isWeak(p: Progress, w: Word): boolean {
+  const s = p[wordKey(w)];
+  return !!s && s.wrong > 0 && s.box < KNOWN_BOX;
+}
+
 // Words in low boxes come early in a pass, well-known ones late. Unseen words sit in the middle.
 const BOX_WEIGHT = [30, 12, 5, 2, 1];
 const UNSEEN_WEIGHT = 6;

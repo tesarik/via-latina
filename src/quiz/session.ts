@@ -1,5 +1,5 @@
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, type DeckState, type Rng } from "./engine";
-import { record, weightOf, type Progress } from "./progress";
+import { isWeak, record, weightOf, type Progress } from "./progress";
 import type { Settings, Word } from "./types";
 
 export interface Question {
@@ -12,8 +12,12 @@ export interface Question {
   chosen: number | null;
 }
 
+/** "weak" practises only words missed earlier (see `isWeak`) until none are left, then everything. */
+export type Focus = "all" | "weak";
+
 export interface Session {
   settings: Settings;
+  focus: Focus;
   deck: DeckState;
   /**
    * The most recent answered questions (at most HISTORY_LIMIT - 1, older ones are
@@ -32,15 +36,25 @@ export interface Session {
 export const HISTORY_LIMIT = 20;
 
 function withNextQuestion(s: Omit<Session, "questions"> & { questions: Question[] }, words: readonly Word[], rng: Rng): Session {
-  const pool = poolFor(words, s.settings.lessons);
+  const all = poolFor(words, s.settings.lessons);
+  const weak = s.focus === "weak" ? all.filter((w) => isWeak(s.progress, w)) : [];
+  // Once every missed word is learnt, the round carries on with the whole selection.
+  const focus: Focus = weak.length ? s.focus : "all";
+  const pool = focus === "weak" ? weak : all;
   const { state, word, again } = drawNext(s.deck, pool, rng, (w) => weightOf(s.progress, w));
   const id = (s.questions.at(-1)?.id ?? 0) + 1;
-  const q: Question = { id, word, options: pickOptions(word, pool, words, undefined, rng), again, chosen: null };
-  return { ...s, deck: state, questions: [...s.questions, q].slice(-HISTORY_LIMIT) };
+  const q: Question = { id, word, options: pickOptions(word, all, words, undefined, rng), again, chosen: null };
+  return { ...s, focus, deck: state, questions: [...s.questions, q].slice(-HISTORY_LIMIT) };
 }
 
-export function newSession(settings: Settings, words: readonly Word[], progress: Progress = {}, rng: Rng = Math.random): Session {
-  return withNextQuestion({ settings, deck: emptyDeck(), questions: [], right: 0, total: 0, streak: 0, progress }, words, rng);
+export function newSession(
+  settings: Settings,
+  words: readonly Word[],
+  progress: Progress = {},
+  rng: Rng = Math.random,
+  focus: Focus = "all",
+): Session {
+  return withNextQuestion({ settings, focus, deck: emptyDeck(), questions: [], right: 0, total: 0, streak: 0, progress }, words, rng);
 }
 
 export function isCorrect(q: Question): boolean {
