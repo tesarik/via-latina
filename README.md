@@ -25,6 +25,8 @@ Obsah složky `dist/` nahraj na web do `/via-latina/` (např. `jaroslavtesarik.c
 
 Každý build má vlastní verzi cache. Kdo má aplikaci otevřenou, uvidí po nasazení dole lištu „Je k dispozici nová verze“; po klepnutí na Aktualizovat se načte nová verze. Pro jinou podsložku nastav `BASE_PATH=/jina-cesta/ npm run build`.
 
+Na jedné doméně může běžet víc aplikací; service worker maže jen staré verze vlastní cache (`vialatina-…`), cizí nechává být. Při nahrání nové verze můžeš ze serveru smazat starou složku `assets/` (soubory mají v názvu otisk verze, jinak by se hromadily).
+
 ## Slovní zásoba
 
 - **Slovíčka 1** (`00-zakladni-slovicka.ts`) – běžná školní slovní zásoba, ke každému slovíčku latinská věta s překladem a poznámka.

@@ -7,8 +7,9 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - React 18 + Vite 6, TypeScript strict, ESLint flat config, Vitest for pure logic. Same setup as the sibling `latin-rosary` project (its `package-lock.json` was reused because a fresh `npm install` hit an npm arborist bug).
 - Plain CSS in `src/index.css` with tokens on `:root` (`--bg`, `--fg`, `--font`); dark mode via `prefers-color-scheme` swaps black/white.
 - Static site; `BASE_PATH` env var sets the Vite base. The user deploys the output of `npm run build:web` (base `/via-latina/`) to jaroslavtesarik.cz/via-latina/ on their own.
-- PWA like `latin-rosary`: `public/manifest.webmanifest`, `public/icon.svg` (+ `icon-180/192/512.png` rendered from it with Inkscape; iOS needs the PNG apple-touch-icon), `public/sw.js` (cache name stamped per build by the `swVersion()` plugin in `vite.config.ts`; network-first for pages, cache-first for assets, lookups use `ignoreVary` because module scripts carry an Origin header). New builds wait for the user: `src/useServiceWorkerUpdate.ts` (copied from latin-rosary, plus it posts `CACHE_URLS` with everything the first visit loaded so the app is offline right away) + `src/components/UpdateToast.tsx`. The font is bundled via `@fontsource/atkinson-hyperlegible-next` (no Google Fonts) so it works offline.
+- PWA like `latin-rosary`: `public/manifest.webmanifest`, `public/icon.svg` (+ `icon-180/192/512.png` rendered from it with Inkscape; iOS needs the PNG apple-touch-icon), `public/sw.js` (cache name stamped per build by the `swVersion()` plugin in `vite.config.ts`; network-first for pages, cache-first for assets; `activate` deletes only old `vialatina-*` caches because other apps on jaroslavtesarik.cz share the same Cache Storage; lookups use `ignoreVary` because module scripts carry an Origin header). New builds wait for the user: `src/useServiceWorkerUpdate.ts` (copied from latin-rosary, plus it posts `CACHE_URLS` with everything the first visit loaded so the app is offline right away) + `src/components/UpdateToast.tsx`. The font is bundled via `@fontsource/atkinson-hyperlegible-next` (no Google Fonts) so it works offline.
 - Repo: github.com/tesarik/via-latina (public), branch `main`.
+- Live at https://jaroslavtesarik.cz/via-latina/ (WEDOS; the user uploads `dist/` by hand). The host's CDN caches HTML for ~5 min plus stale-while-revalidate, so a fresh deploy may show up one reload late; plain http:// is not redirected to https.
 
 ## Commands
 
@@ -50,3 +51,4 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - **Do not mention the source** of Slovíčka 2/3 anywhere in the repo (README, comments, docs).
 - Header: "správně x/y" and "série" explain themselves via tap tooltips; keep the streak tooltip short.
 - Commit and push to `main` after each finished change; end commit messages with the Co-Authored-By line.
+- Work only in this repo; don't change or open PRs in sibling projects (latin-rosary…) from a via-latina session.
