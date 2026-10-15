@@ -69,9 +69,10 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
         {q.options.map((o, i) => {
           let cls = "opt";
           if (answered) {
+            // Only the right option and a wrong pick stay, so the example has room.
             if (o === q.word) cls += " right";
             else if (i === q.chosen) cls += " wrong";
-            else cls += " dim";
+            else return null;
           }
           return (
             <button key={o.la + o.cz} type="button" className={cls} disabled={answered} onClick={() => onAnswer(i)}>

@@ -45,7 +45,8 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - Calm pace: **no automatic advance**; after every answer the learner moves on with the ↓ button or by swiping. ↑ goes back with the same smooth scroll.
 - Czech meanings of **verbs are in the 1st person sg. in every set** ("miluji", "přijímám"), never the infinitive, so the form never gives the answer away.
 - Direction is **Latin → Czech only** (Czech → Latin was removed on request).
-- Look: **black and white only**, sans-serif (Atkinson Hyperlegible Next), large type. State is shown by fill/dashed border/strike-through, never colour.
+- Look: **black and white**, sans-serif (Atkinson Hyperlegible Next), large type. State is shown by fill/dashed border/strike-through; the only colour is the verdict label ("Recte!" green, wrong-answer label red, `--good`/`--bad`), added on request.
+- After answering, the options not involved disappear (correct → only the right one; wrong → right + picked), so the example has room. `.prompt` has `overscroll-behavior: contain` so scrolling a long example doesn't flip to the next card.
 - Lessons are **vocabulary sets of roughly 300 words**, not textbook grammar chapters; titles are just "Slovíčka N". A new set leaves out words already in earlier sets.
 - **Every word has an example sentence** with Czech translation (enforced by a test); remarks are optional. Examples/notes are AI-written; the user reports errors and they get fixed.
 - **Do not mention the source** of Slovíčka 2/3 anywhere in the repo (README, comments, docs).

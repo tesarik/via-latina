@@ -1,8 +1,10 @@
 /* Mobile-first: one word per screen, options in the thumb zone at the bottom.
-   Strictly black and white: state is shown by fill, border and strike-through, never by colour. */
+   Black and white; the only colours are the verdict labels (green right, red wrong). */
 :root {
   --bg: #fff;
   --fg: #000;
+  --good: #137333;
+  --bad: #c5221f;
   --font: "Atkinson Hyperlegible Next", "Helvetica Neue", Arial, system-ui, sans-serif;
   color-scheme: light;
 }
@@ -10,6 +12,8 @@
   :root {
     --bg: #000;
     --fg: #fff;
+    --good: #5bd68a;
+    --bad: #ff7b72;
     color-scheme: dark;
   }
 }
@@ -141,6 +145,8 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
   text-align: center;
   min-height: 0;
   overflow-y: auto;
+  /* Scrolling through a long example stops at its end instead of moving on to the next word. */
+  overscroll-behavior: contain;
   justify-content: safe center;
 }
 .count { font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; }
@@ -172,7 +178,8 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
 
 .feedback { min-height: 3em; display: flex; align-items: center; justify-content: center; text-align: center; padding-block: 4px; }
 .verdict { font-size: 19px; line-height: 1.35; }
-.verdict.good { font-weight: 800; font-size: 23px; }
+.verdict.good { font-weight: 800; font-size: 23px; color: var(--good); }
+.verdict.bad { color: var(--bad); }
 .verdict.bad b { font-weight: 800; }
 
 .options { display: flex; flex-direction: column; gap: 10px; }
@@ -196,7 +203,6 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
 .opt:disabled { cursor: default; }
 .opt.right { background: var(--fg); color: var(--bg); font-weight: 800; }
 .opt.wrong { border-style: dashed; text-decoration: line-through; text-decoration-thickness: 2px; }
-.opt.dim { border-width: 1px; padding: 11px 17px; }
 .next {
   min-height: 56px;
   border: 0;
