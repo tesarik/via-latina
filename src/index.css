@@ -264,6 +264,8 @@ legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em
   border-top: 1px solid var(--fg);
 }
 .lesson {
+  /* No shrinking: the list scrolls instead of squeezing rows into each other. */
+  flex: none;
   display: flex;
   align-items: center;
   gap: 12px;
