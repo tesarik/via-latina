@@ -33,16 +33,17 @@ Na jedné doméně může běžet víc aplikací; service worker maže jen star�
 - **Slovíčka 2 a 3** (`01-slovicka-2.ts`, `02-slovicka-3.ts`) – další základní slovní zásoba bez slov, která už jsou ve Slovíčkách 1. České významy jsou zkrácené; ke každému slovíčku věta s překladem.
 - **Slovíčka 4** (`03-slovicka-4.ts`) – liturgická slova (mše, chorální zpěvy, litanie), která nejsou v sadách 1–3, seřazená od nejčastějších; ke každému slovíčku věta s překladem.
 - **Slovíčka 5 a 6** (`04-slovicka-5.ts`, `05-slovicka-6.ts`) – slova z modliteb, hymnů, žalmů a katechismových výčtů, která nejsou v sadách 1–4. V sadě 5 jsou běžnější slova (např. *ipse, vel, nemo, mensa*), v sadě 6 vzácnější; ke každému slovíčku věta s překladem.
+- **Slovíčka 7–9** (`06-slovicka-7.ts` … `08-slovicka-9.ts`) – 881 slov z každodenního života starých Římanů (dům, rodina, tělo, příroda, město, boj, cestování, měsíce, číslovky), která nejsou v sadách 1–6, seřazená od nejužitečnějších; ke každému slovíčku věta s překladem.
 
 ## Přidání lekce
 
 Každá sada slovíček (v aplikaci „lekce“) je jeden soubor ve složce `src/lessons/`. Název souboru začíná číslem, které určuje pořadí v nastavení (`00-…`, `01-…`, `02-…`). Zbytek názvu je jen pro orientaci.
 
 ```ts
-// src/lessons/06-slovicka-7.ts
+// src/lessons/09-slovicka-10.ts
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Slovíčka 7", [
+export default lesson("Slovíčka 10", "Jedna věta o tom, jaká slova sada obsahuje (voda, otec…)", [
   n("aqua", "aquae f.", "voda", ["Aqua vitae est.", "Voda je život.", "Odtud akvárium."]),
   v("amo", "amāre, amāvī, amātum", "miluji", ["Deum amo.", "Miluji Boha."]),
   a("bonus", "bona, bonum", "dobrý", ["Deus bonus est.", "Bůh je dobrý."]),
