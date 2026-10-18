@@ -161,6 +161,9 @@ button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
   overflow-wrap: anywhere;
 }
 .info { font-size: 21px; }
+/* Once the example is shown the headword steps down so the sentence and its translation fit. */
+.has-note .word { font-size: clamp(34px, 10vw, 52px); }
+.has-note .info { font-size: 19px; }
 .note {
   margin-top: 14px;
   padding-top: 14px;

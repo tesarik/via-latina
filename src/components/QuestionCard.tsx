@@ -31,7 +31,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
   }, [answered, ok]);
 
   return (
-    <section className="slide" ref={ref} data-id={q.id} aria-label={`Slovíčko ${number}`}>
+    <section className={`slide${note ? " has-note" : ""}`} ref={ref} data-id={q.id} aria-label={`Slovíčko ${number}`}>
       <div className="prev-row">
         {onPrev && (
           <button type="button" className="prev" aria-label="Předchozí slovíčko" onClick={onPrev}>
@@ -60,7 +60,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
             <span className="verdict good">Recte!</span>
           ) : (
             <span className="verdict bad">
-              <b>{q.word.la}</b>, {q.word.info} = <b>{q.word.cz}</b>
+              <b>{q.word.la}</b> = <b>{q.word.cz}</b>
             </span>
           ))}
       </div>
