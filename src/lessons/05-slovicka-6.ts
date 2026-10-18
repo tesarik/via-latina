@@ -1,6 +1,6 @@
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Slovíčka 6", [
+export default lesson("Slovíčka 6", "Vzácnější slova ze žalmů, hymnů a církevního práva (exkomunikace, perla, žluč…)", [
   n("excommunicatio", "excommūnicātiōnis f.", "exkomunikace, vyobcování", ["Ego te absolvo a vinculo excommunicationis.", "Rozvazuji tě z pouta exkomunikace.", "Formule rozhřešení od církevního trestu."]),
   o("fiducialiter", "příslovce", "s důvěrou, směle", ["Fiducialiter agam et non timebo.", "Jsem plný důvěry a nebojím se.", "Iz 12,2. Od fiducia = důvěra."]),
   n("flagellatio", "flagellātiōnis f.", "bičování", ["Flagellatio crudelis", "Kruté bičování", "Druhé tajemství bolestného růžence. Od flagellum = bič."]),

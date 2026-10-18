@@ -11,6 +11,8 @@ export interface Entry {
 
 export interface LessonSource {
   title: string;
+  /** One line under the title in the lesson picker: what kind of words the set has. */
+  description: string;
   entries: Entry[];
 }
 
@@ -34,4 +36,4 @@ export const a = entry("a");
 /** Ostatní (příslovce, spojky, předložky, zájmena, číslovky): o("et", "spojka", "a", […]) */
 export const o = entry("o");
 
-export const lesson = (title: string, entries: Entry[]): LessonSource => ({ title, entries });
+export const lesson = (title: string, description: string, entries: Entry[]): LessonSource => ({ title, description, entries });

@@ -22,15 +22,17 @@ export function saveSettings(s: Settings): void {
 }
 
 /**
- * Lesson selection after tapping one lesson. `selected` empty means all lessons.
- * Returns null when nothing changes: the last selected lesson can't be unticked,
- * since a round needs at least one lesson.
+ * Lessons ticked in the settings sheet after tapping one. Unlike `Settings.lessons`
+ * this is the explicit list, and it may be empty while the learner is choosing.
  */
-export function toggleLesson(selected: readonly string[], id: string, allIds: readonly string[]): string[] | null {
-  const current = selected.length ? selected : allIds;
-  const next = current.includes(id) ? current.filter((l) => l !== id) : [...current, id];
-  if (next.length === 0) return null;
-  // Keep lesson order stable; ticking every lesson is the same as "all".
-  const ordered = allIds.filter((l) => next.includes(l));
-  return ordered.length === allIds.length ? [] : ordered;
+export function toggleLesson(picked: readonly string[], id: string, allIds: readonly string[]): string[] {
+  const next = picked.includes(id) ? picked.filter((l) => l !== id) : [...picked, id];
+  // Keep lesson order stable whatever the tapping order.
+  return allIds.filter((l) => next.includes(l));
+}
+
+/** `Settings.lessons` for the ticked lessons: every lesson collapses to "all" ([]), none gives null (a round needs one). */
+export function lessonsFor(picked: readonly string[], allIds: readonly string[]): string[] | null {
+  if (picked.length === 0) return null;
+  return picked.length === allIds.length ? [] : [...picked];
 }

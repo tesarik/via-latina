@@ -1,6 +1,6 @@
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Slovíčka 5", [
+export default lesson("Slovíčka 5", "Častější slova z modliteb, hymnů a žalmů (povstávám, verš, obrácení, biřmování…)", [
   o("ipse", "zájmeno (ipsa, ipsum)", "sám; on", ["Et ipse redimet Israel ex omnibus iniquitatibus eius.", "A on vykoupí Izraele ze všech jeho nepravostí.", "Ž 130,8. Gen. ipsīus."]),
   v("exsurgo", "exsurgere, exsurrēxī, exsurrēctum", "povstávám, vstávám", ["Exsurge, Domine, adiuva nos.", "Povstaň, Pane, pomoz nám.", "Ž 44,27. Ex + surgo."]),
   o("vel", "spojka", "nebo, anebo", ["Hodie vel cras veniam.", "Přijdu dnes nebo zítra.", "Vel – vel = buď – anebo (volná volba, na rozdíl od aut)."]),

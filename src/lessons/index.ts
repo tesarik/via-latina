@@ -9,7 +9,7 @@ export const LESSONS: Lesson[] = Object.entries(modules)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([path, mod]) => {
     const id = path.replace(/^\.\//, "").replace(/\.ts$/, "");
-    return { id, title: mod.default.title, words: mod.default.entries.map((e) => ({ ...e, lesson: id })) };
+    return { id, title: mod.default.title, description: mod.default.description, words: mod.default.entries.map((e) => ({ ...e, lesson: id })) };
   });
 
 export const WORDS: Word[] = LESSONS.flatMap((l) => l.words);

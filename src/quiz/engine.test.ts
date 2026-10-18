@@ -3,7 +3,7 @@ import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, weightedOrder
 import { exportProgress, importProgress, isKnown, isWeak, KNOWN_BOX, record, weightOf, wordKey, type Progress } from "./progress";
 import { answer, HISTORY_LIMIT, isCorrect, newSession } from "./session";
 import { LESSONS, WORDS } from "../lessons";
-import { toggleLesson } from "./settings";
+import { lessonsFor, toggleLesson } from "./settings";
 import type { Word } from "./types";
 
 // Deterministic PRNG so failures reproduce.
@@ -174,24 +174,25 @@ describe("session", () => {
   });
 });
 
-describe("toggleLesson", () => {
+describe("toggleLesson / lessonsFor", () => {
   const ids = ["01", "02", "03"];
 
   it("unticking one lesson out of all keeps the others", () => {
-    expect(toggleLesson([], "02", ids)).toEqual(["01", "03"]);
+    expect(toggleLesson(ids, "02", ids)).toEqual(["01", "03"]);
   });
 
   it("ticking the last missing lesson means all again", () => {
-    expect(toggleLesson(["01", "03"], "02", ids)).toEqual([]);
+    expect(lessonsFor(toggleLesson(["01", "03"], "02", ids), ids)).toEqual([]);
   });
 
   it("keeps lesson order whatever the tapping order", () => {
     expect(toggleLesson(["03"], "01", ids)).toEqual(["01", "03"]);
   });
 
-  it("refuses to untick the only selected lesson", () => {
-    expect(toggleLesson(["02"], "02", ids)).toBeNull();
-    expect(toggleLesson([], "01", ["01"])).toBeNull();
+  it("may untick everything, but an empty choice is not a selection", () => {
+    expect(toggleLesson(["02"], "02", ids)).toEqual([]);
+    expect(lessonsFor([], ids)).toBeNull();
+    expect(lessonsFor(["02"], ids)).toEqual(["02"]);
   });
 });
 

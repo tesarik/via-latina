@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LESSONS, WORDS } from "../lessons";
 import { poolFor } from "../quiz/engine";
-import { toggleLesson } from "../quiz/settings";
+import { lessonsFor, toggleLesson } from "../quiz/settings";
 import { exportProgress, importProgress, isKnown, type Progress } from "../quiz/progress";
 import type { Settings } from "../quiz/types";
 
@@ -21,8 +21,12 @@ export default function SettingsSheet({ settings, progress, onChange, onResetPro
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  const allIds = LESSONS.map((l) => l.id);
   const selected = settings.lessons;
-  const all = selected.length === 0;
+  // What is ticked in the sheet. It may be empty for a moment (untick all, then pick one);
+  // the round only changes while at least one lesson is ticked.
+  const [picked, setPicked] = useState<string[]>(selected.length ? selected : allIds);
+  const all = picked.length === allIds.length;
   const pool = poolFor(WORDS, selected);
   const count = pool.length;
   const known = pool.filter((w) => isKnown(progress, w)).length;
@@ -62,9 +66,10 @@ export default function SettingsSheet({ settings, progress, onChange, onResetPro
     setBackupMsg(`Obnoveno: postup u ${Object.keys(restored).length} slovíček.`);
   };
 
-  const toggle = (id: string) => {
-    const next = toggleLesson(selected, id, LESSONS.map((l) => l.id));
-    if (next) onChange({ ...settings, lessons: next });
+  const pick = (next: string[]) => {
+    setPicked(next);
+    const lessons = lessonsFor(next, allIds);
+    if (lessons) onChange({ ...settings, lessons });
   };
 
   return (
@@ -78,14 +83,17 @@ export default function SettingsSheet({ settings, progress, onChange, onResetPro
           <div className="lessons">
             {LESSONS.length > 1 && (
               <label className="lesson">
-                <input type="checkbox" checked={all} onChange={() => !all && onChange({ ...settings, lessons: [] })} />
+                <input type="checkbox" checked={all} onChange={() => pick(all ? [] : allIds)} />
                 <span>Všechny lekce</span>
               </label>
             )}
             {LESSONS.map((l) => (
               <label key={l.id} className="lesson">
-                <input type="checkbox" checked={all || selected.includes(l.id)} onChange={() => toggle(l.id)} />
-                <span>{l.title}</span>
+                <input type="checkbox" checked={picked.includes(l.id)} onChange={() => pick(toggleLesson(picked, l.id, allIds))} />
+                <span>
+                  {l.title}
+                  <small className="lesson-desc">{l.description}</small>
+                </span>
                 <small>
                   {l.words.filter((w) => isKnown(progress, w)).length} / {l.words.length}
                 </small>
@@ -94,6 +102,11 @@ export default function SettingsSheet({ settings, progress, onChange, onResetPro
           </div>
         </fieldset>
 
+        {picked.length === 0 && (
+          <p className="note-line" role="status">
+            <b>Vyber aspoň jednu lekci.</b>
+          </p>
+        )}
         <p className="note-line">
           Umíš {known} z {count} slovíček ve výběru (3× správně za sebou).{" "}
           {LESSONS.length > 1 ? "Změna výběru začne nové kolo." : "Zatím je k dispozici jen jedna lekce."}

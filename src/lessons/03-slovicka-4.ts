@@ -1,6 +1,6 @@
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Slovíčka 4", [
+export default lesson("Slovíčka 4", "Slova ze mše a liturgie (smiluj se, hosana, rozhřešení, introit…)", [
   o("eleison", "nesklonné (řec.)", "smiluj se", ["Kyrie, eleison.", "Pane, smiluj se.", "Řecky; v latinské mši zůstalo bez překladu."]),
   n("Christus", "Christī m.", "Kristus, Pomazaný", ["Christus vincit, Christus regnat.", "Kristus vítězí, Kristus kraluje.", "Z řeckého christos = pomazaný."]),
   o("Kyrie", "nesklonné (řec.)", "Pane", ["Kyrie, eleison. Christe, eleison.", "Pane, smiluj se. Kriste, smiluj se.", "Řecký vokativ od kyrios = pán."]),

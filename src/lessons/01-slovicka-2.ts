@@ -1,6 +1,6 @@
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Slovíčka 2", [
+export default lesson("Slovíčka 2", "Častá slova z modliteb a katechismu (přijímám, milost, svatý, odpouštím…)", [
   o("ab", "předložka + abl. (ā, ab, abs)", "od, z", ["A Domino factum est istud.", "Od Hospodina se to stalo.", "Ž 118,23. Před souhláskou ā, před samohláskou ab."]),
   v("accipio", "accipere, accēpī, acceptum", "přijímám, beru, dostávám", ["Accipite et manducate.", "Vezměte a jezte.", "Slova proměňování při mši. Odtud akceptovat."]),
   o("amen", "citoslovce (hebr.)", "opravdu, staň se, amen", ["Amen dico vobis.", "Amen, pravím vám.", "Hebrejské slovo, které Ježíš často používá na začátku výroku."]),

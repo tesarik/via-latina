@@ -1,6 +1,6 @@
 import { lesson, n, v, a, o } from "./define";
 
-export default lesson("Slovíčka 3", [
+export default lesson("Slovíčka 3", "Další běžná slova, víc sloves a abstraktních pojmů (zvěstuji, kalich, bolest, svět…)", [
   v("annuntio", "annūntiāre, annūntiāvī, annūntiātum", "oznamuji, zvěstuji", ["Annuntio vobis gaudium magnum.", "Zvěstuji vám velikou radost.", "Odtud anonce."]),
   n("calix", "calicis m.", "kalich, pohár", ["Hic est calix sanguinis mei.", "Toto je kalich mé krve.", "Ze mše. Odtud kalich."]),
   a("castus", "casta, castum", "čistý, bezúhonný", ["Vita casta et pura", "Čistý a bezúhonný život", "Odtud incest – doslova ne-čistý (in-castus)."]),
