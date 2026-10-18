@@ -31,7 +31,7 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - `src/quiz/types.ts` — `Word`, `Lesson`, `Note`, `Settings`.
 - `src/App.tsx` — the snap-scrolling feed. Remembers which card is on screen and restores it when old cards are dropped (`overflow-anchor: none`, feed is `position: relative` so `offsetTop` is feed-relative). Keyboard: 1–4 answer the open card if it is on screen, Enter/↓ go to it.
 - `src/components/StartScreen.tsx` — shown on every launch as a fixed overlay over the feed (the feed stays mounted, so returning keeps the place): known x / y for the selection with a bar, "Začít" (no progress yet) / "Pokračovat", "Opakovat chybná slovíčka (n)" when some exist, "Vybrat lekce" (opens the settings sheet). Tapping "Via Latina" in the header goes back to it.
-- `src/components/QuestionCard.tsx` (card, ↑ previous / ↓ next buttons), `SettingsSheet.tsx` (bottom sheet with lesson checkboxes), `StatTip.tsx` (tap-to-explain bubble for the header figures).
+- `src/components/QuestionCard.tsx` (card, ↑ previous / ↓ next buttons), `SettingsSheet.tsx` (bottom sheet with lesson checkboxes and each lesson's description; rows are `flex: none` so the scrolling list never squeezes them), `StatTip.tsx` (tap-to-explain bubble for the header figures).
 - `src/quiz/engine.test.ts` — all tests, including lesson-data checks (no empty fields, no duplicate pos+headword within a lesson, every word has an example sentence with translation).
 
 ## Adding vocabulary from a Latin text (how sets 4–9 were made)
@@ -48,7 +48,7 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - Czech meanings of **verbs are in the 1st person sg. in every set** ("miluji", "přijímám"), never the infinitive, so the form never gives the answer away.
 - Direction is **Latin → Czech only** (Czech → Latin was removed on request).
 - Look: **black and white**, sans-serif (Atkinson Hyperlegible Next), large type. State is shown by fill/dashed border/strike-through; the only colour is the verdict label ("Recte!" green, wrong-answer label red, `--good`/`--bad`), added on request.
-- After answering, the options not involved disappear (correct → only the right one; wrong → right + picked), so the example has room. `.prompt` has `overscroll-behavior: contain` so scrolling a long example doesn't flip to the next card.
+- After answering, the options not involved disappear (correct → only the right one; wrong → right + picked), so the example has room. Option buttons are compact (min-height 48px, user asked for less height). Once the example shows, the card gets `.has-note` and the headword steps down in size; the wrong-answer label is just "la = cz" (grammar info is already on the card). Checked at 375×667: every example fits after a right answer, a handful of the longest scroll after a wrong one. `.prompt` has `overscroll-behavior: contain` so scrolling a long example doesn't flip to the next card.
 - Lessons are **vocabulary sets of roughly 300 words**, not textbook grammar chapters; titles are just "Slovíčka N". A new set leaves out words already in earlier sets.
 - **Every word has an example sentence** with Czech translation (enforced by a test); remarks are optional. Examples/notes are AI-written; the user reports errors and they get fixed.
 - **Do not mention the source** of Slovíčka 2/3 anywhere in the repo (README, comments, docs).
