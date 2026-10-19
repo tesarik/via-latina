@@ -1,7 +1,22 @@
 import { describe, expect, it } from "vitest";
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, weightedOrder, type DeckState } from "./engine";
-import { exportProgress, importProgress, isKnown, isWeak, KNOWN_BOX, record, totals, weightOf, wordKey, type Progress } from "./progress";
-import { answer, HISTORY_LIMIT, isCorrect, newSession } from "./session";
+import {
+  exportProgress,
+  importProgress,
+  INTERVAL_DAYS,
+  isDue,
+  isKnown,
+  isWeak,
+  KNOWN_BOX,
+  parseProgress,
+  record,
+  today,
+  totals,
+  weightOf,
+  wordKey,
+  type Progress,
+} from "./progress";
+import { answer, HISTORY_LIMIT, isCorrect, newSession, restoreSession, saveRound } from "./session";
 import { LESSONS, WORDS } from "../lessons";
 import { lessonsFor, toggleLesson } from "./settings";
 import type { Word } from "./types";
@@ -149,6 +164,44 @@ describe("session", () => {
     expect(s.deck.retry.map((r) => r.word)).toContain(q2.word);
   });
 
+  it("numbers words within the pass and saves the round for the next visit", () => {
+    const id = LESSONS[0].id;
+    const size = poolFor(WORDS, [id]).length;
+    const rng = seeded(4);
+    let s = newSession({ lessons: [id] }, WORDS, {}, rng);
+    for (let i = 0; i < 5; i++) {
+      const q = s.questions.at(-1)!;
+      expect({ pass: q.pass, n: q.n, of: q.of }).toEqual({ pass: 1, n: i + 1, of: size });
+      s = answer(s, q.id, q.options.indexOf(q.word), WORDS, rng);
+    }
+    const saved = JSON.parse(JSON.stringify(saveRound(s)));
+    const back = restoreSession(saved, { lessons: [id] }, WORDS, s.progress, rng)!;
+    const open = back.questions[0];
+    expect(open.word).toBe(s.questions.at(-1)!.word);
+    expect(open.n).toBe(6);
+    expect(back.deck.deck).toEqual(s.deck.deck);
+    // The next word is the one the old round would have asked.
+    const next = answer(back, open.id, open.options.indexOf(open.word), WORDS, rng).questions.at(-1)!;
+    expect(next.word).toBe(s.deck.deck.at(-1));
+    expect(next.n).toBe(7);
+    // A saved round for another selection is not used.
+    expect(restoreSession(saved, { lessons: [] }, WORDS, s.progress, rng)).toBeNull();
+  });
+
+  it("starts pass 2 once every word was asked", () => {
+    const id = LESSONS.at(-1)!.id;
+    const size = poolFor(WORDS, [id]).length;
+    const rng = seeded(12);
+    let s = newSession({ lessons: [id] }, WORDS, {}, rng);
+    for (let i = 0; i < size; i++) {
+      const q = s.questions.at(-1)!;
+      s = answer(s, q.id, q.options.indexOf(q.word), WORDS, rng);
+    }
+    // Every word again, but not opening with the one that closed pass 1.
+    expect(s.questions.at(-1)).toMatchObject({ pass: 2, n: 1, of: size });
+    expect(s.questions.at(-1)!.word).not.toBe(s.questions.at(-2)!.word);
+  });
+
   it("keeps only the latest cards while numbering keeps counting", () => {
     const rng = seeded(8);
     let s = newSession({ lessons: [] }, WORDS, {}, rng);
@@ -199,21 +252,48 @@ describe("toggleLesson / lessonsFor", () => {
 describe("progress", () => {
   const w = WORDS[0];
 
-  it("moves a word up on a right answer and back to zero on a wrong one", () => {
+  it("moves a word up on a right answer when due and back to zero on a wrong one", () => {
+    const day0 = 20_000;
     let p: Progress = {};
-    for (let i = 0; i < KNOWN_BOX; i++) p = record(p, w, true);
+    let day = day0;
+    for (let i = 0; i < KNOWN_BOX; i++) {
+      p = record(p, w, true, day);
+      day = p[wordKey(w)]!.due!;
+    }
     expect(isKnown(p, w)).toBe(true);
-    p = record(p, w, false);
-    expect(p[wordKey(w)]).toEqual({ box: 0, seen: KNOWN_BOX + 1, wrong: 1 });
+    expect(p[wordKey(w)]!.due).toBe(day0 + INTERVAL_DAYS[1] + INTERVAL_DAYS[2] + INTERVAL_DAYS[3]);
+    p = record(p, w, false, day0 + 30);
+    expect(p[wordKey(w)]).toEqual({ box: 0, seen: KNOWN_BOX + 1, wrong: 1, due: day0 + 30 });
     expect(isKnown(p, w)).toBe(false);
+  });
+
+  it("a right answer before the word is due keeps its box", () => {
+    let p = record({}, w, true, 100);
+    expect(p[wordKey(w)]).toEqual({ box: 1, seen: 1, wrong: 0, due: 101 });
+    expect(isDue(p, w, 100)).toBe(false);
+    p = record(p, w, true, 100);
+    expect(p[wordKey(w)]).toEqual({ box: 1, seen: 2, wrong: 0, due: 101 });
+    expect(isDue(p, w, 101)).toBe(true);
+    p = record(p, w, true, 101);
+    expect(p[wordKey(w)]!.box).toBe(2);
+  });
+
+  it("treats old records without a due day as due, and the day turns at local midnight", () => {
+    const p = parseProgress({ [wordKey(w)]: { box: 2, seen: 3, wrong: 0 } })!;
+    expect(isDue(p, w, 5)).toBe(true);
+    expect(record(p, w, true, 5)[wordKey(w)]).toEqual({ box: 3, seen: 4, wrong: 0, due: 5 + INTERVAL_DAYS[3] });
+    expect(today(new Date(2026, 9, 19, 23, 59))).toBe(today(new Date(2026, 9, 19, 0, 1)));
+    expect(today(new Date(2026, 9, 20, 0, 1))).toBe(today(new Date(2026, 9, 19, 12)) + 1);
   });
 
   it("weighs a missed word above an unseen one and a known one below both", () => {
     const missed = record({}, w, false);
     let known: Progress = {};
-    for (let i = 0; i < 4; i++) known = record(known, w, true);
+    for (let day = 0; day < 40; day += 10) known = record(known, w, true, day);
     expect(weightOf(missed, w)).toBeGreaterThan(weightOf({}, w));
-    expect(weightOf(known, w)).toBeLessThan(weightOf({}, w));
+    expect(weightOf(known, w, 60)).toBeLessThan(weightOf({}, w));
+    // Not due yet: after everything that is.
+    expect(weightOf(known, w, 31)).toBeLessThan(weightOf(known, w, 60));
   });
 
   it("puts heavy items first most of the time but keeps every item", () => {
@@ -289,8 +369,9 @@ describe("progress", () => {
       expect(q.options).toHaveLength(4);
       s = answer(s, q.id, q.options.indexOf(q.word), WORDS, rng);
     }
-    // Three right answers make both words known; after that the whole lesson is asked.
-    expect(asked.slice(0, 6).every((w) => missed.includes(w))).toBe(true);
+    // A right answer puts each off until tomorrow; after that the whole lesson is asked.
+    expect(asked.slice(0, 2).every((w) => missed.includes(w))).toBe(true);
+    expect(missed.some((x) => isWeak(s.progress, x))).toBe(false);
     expect(s.focus).toBe("all");
     expect(asked.some((w) => !missed.includes(w))).toBe(true);
   });

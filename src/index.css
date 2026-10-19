@@ -347,8 +347,10 @@ legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em
 .bar > div { position: absolute; inset: 0 auto 0 0; height: 100%; }
 .bar-known { background: var(--fg); }
 .bar-seen { background: repeating-linear-gradient(-45deg, var(--fg) 0 2px, transparent 2px 5px); }
-.start-progress .start-seen { font-size: 16px; }
-.start-progress .start-sel { font-size: 16px; }
+.start-progress .start-small { font-size: 16px; margin-top: 4px; }
+.start-backup { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 2px dashed var(--fg); border-radius: 12px; }
+.start-backup p { margin: 0; flex: 1; font-size: 16px; }
+.start-backup .reset { flex: none; padding: 0 16px; min-height: 44px; font-size: 16px; }
 .start-actions { display: flex; flex-direction: column; gap: 12px; }
 
 @keyframes fade { from { opacity: 0; } }
@@ -386,3 +388,69 @@ legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em
   cursor: pointer;
 }
 .update-x { border: 0; background: none; color: var(--bg); font-size: 26px; width: 40px; height: 40px; cursor: pointer; }
+
+/* ---- speaker and report buttons on the card ---- */
+.speak {
+  width: 40px; height: 40px;
+  margin-left: 6px;
+  display: inline-grid; place-items: center;
+  vertical-align: middle;
+  border: 2px solid var(--fg); border-radius: 50%;
+  background: var(--bg); color: var(--fg);
+  cursor: pointer;
+}
+.speak:active { background: var(--fg); color: var(--bg); }
+.note .ex .speak { width: 32px; height: 32px; }
+.note .ex .speak svg { width: 18px; height: 18px; }
+.note .report { margin-top: 8px; font-size: 15px; }
+.report button {
+  background: none; border: 0; padding: 6px 0; font-size: inherit; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* ---- word list (covers everything, like the start screen) ---- */
+.wordlist {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 16px 0;
+}
+.wordlist-head { display: flex; align-items: center; gap: 12px; }
+.wordlist-head h2 { margin: 0; flex: 1; font-size: 23px; font-weight: 800; }
+.wordlist-close { min-height: 44px; padding: 0 20px; }
+.wordlist-filters { display: flex; flex-direction: column; gap: 8px; padding: 10px 0; border-bottom: 2px solid var(--fg); }
+.wordlist-filters input, .wordlist-filters select {
+  font: inherit; font-size: 17px; color: var(--fg); background: var(--bg);
+  min-height: 44px; padding: 0 12px;
+  border: 2px solid var(--fg); border-radius: 12px;
+  min-width: 0;
+}
+.wordlist-selects { display: flex; gap: 8px; }
+.wordlist-selects select { flex: 1; }
+.wordlist-count { margin: 0; font-size: 15px; }
+.wordlist-items {
+  list-style: none; margin: 0; padding: 0 0 calc(env(safe-area-inset-bottom, 0px) + 16px);
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+}
+.wordlist-items li { border-bottom: 1px solid var(--fg); }
+.wordlist-items summary {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; cursor: pointer; list-style: none;
+}
+.wordlist-items summary::-webkit-details-marker { display: none; }
+.wl-main { flex: 1; min-width: 0; font-size: 18px; line-height: 1.3; }
+.wl-info { font-size: 15px; }
+.wl-cz { display: block; }
+.wl-status { flex: none; font-size: 14px; padding: 2px 8px; border: 1.5px solid var(--fg); border-radius: 999px; }
+.wl-status.new { border-style: dotted; }
+.wl-status.weak { border-style: dashed; }
+.wl-status.known { background: var(--fg); color: var(--bg); }
+.wl-note { padding: 0 0 12px; font-size: 16px; }
+.wl-note p { margin: 0 0 4px; }
+.wl-remark { font-size: 15px; }
+.lesson .lesson-stat { text-align: right; line-height: 1.3; white-space: nowrap; }

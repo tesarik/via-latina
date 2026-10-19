@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { LESSONS, WORDS } from "../lessons";
 import { poolFor } from "../quiz/engine";
 import { lessonsFor, toggleLesson } from "../quiz/settings";
-import { exportProgress, importProgress, isKnown, type Progress } from "../quiz/progress";
+import { importProgress, isKnown, isSeen, type Progress } from "../quiz/progress";
+import { saveBackup } from "../backup";
 import type { Settings } from "../quiz/types";
 
 interface Props {
@@ -11,10 +12,11 @@ interface Props {
   onChange: (s: Settings) => void;
   onResetProgress: () => void;
   onRestoreProgress: (p: Progress) => void;
+  onWordList: () => void;
   onClose: () => void;
 }
 
-export default function SettingsSheet({ settings, progress, onChange, onResetProgress, onRestoreProgress, onClose }: Props) {
+export default function SettingsSheet({ settings, progress, onChange, onResetProgress, onRestoreProgress, onWordList, onClose }: Props) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -36,26 +38,9 @@ export default function SettingsSheet({ settings, progress, onChange, onResetPro
   const [backupMsg, setBackupMsg] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const saveBackup = async () => {
-    const name = `via-latina-postup-${new Date().toISOString().slice(0, 10)}.json`;
-    const file = new File([exportProgress(progress)], name, { type: "application/json" });
-    // On phones the share sheet lets the file go to Files, Drive or a message; elsewhere it downloads.
-    if (navigator.canShare?.({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: "Via Latina – záloha postupu" });
-        setBackupMsg("Záloha uložena.");
-      } catch (e) {
-        if ((e as Error).name !== "AbortError") setBackupMsg("Zálohu se nepodařilo uložit.");
-      }
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = name;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setBackupMsg("Záloha stažena.");
+  const backup = async () => {
+    const msg = await saveBackup(progress);
+    if (msg) setBackupMsg(msg);
   };
 
   const restoreBackup = async (file: File | undefined) => {
@@ -94,8 +79,10 @@ export default function SettingsSheet({ settings, progress, onChange, onResetPro
                   {l.title}
                   <small className="lesson-desc">{l.description}</small>
                 </span>
-                <small>
-                  {l.words.filter((w) => isKnown(progress, w)).length} / {l.words.length}
+                <small className="lesson-stat">
+                  umím {l.words.filter((w) => isKnown(progress, w)).length}
+                  <br />
+                  prošel {l.words.filter((w) => isSeen(progress, w)).length} / {l.words.length}
                 </small>
               </label>
             ))}
@@ -108,12 +95,15 @@ export default function SettingsSheet({ settings, progress, onChange, onResetPro
           </p>
         )}
         <p className="note-line">
-          Umíš {known} z {count} slovíček ve výběru (3× správně za sebou).{" "}
+          Umíš {known} z {count} slovíček ve výběru (3× správně, pokaždé v jiný den).{" "}
           {LESSONS.length > 1 ? "Změna výběru začne nové kolo." : "Zatím je k dispozici jen jedna lekce."}
         </p>
+        <button type="button" className="reset" onClick={onWordList}>
+          Seznam slovíček
+        </button>
         <div className="backup">
           {hasProgress && (
-            <button type="button" className="reset" onClick={saveBackup}>
+            <button type="button" className="reset" onClick={backup}>
               Uložit zálohu
             </button>
           )}

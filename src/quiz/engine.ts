@@ -13,9 +13,12 @@ export interface DeckState {
   retry: { word: Word; due: number }[];
   served: number;
   last: Word | null;
+  /** Number of the current pass (1 = first) and how many words it has. */
+  pass: number;
+  size: number;
 }
 
-export const emptyDeck = (): DeckState => ({ deck: [], retry: [], served: 0, last: null });
+export const emptyDeck = (): DeckState => ({ deck: [], retry: [], served: 0, last: null, pass: 0, size: 0 });
 
 /**
  * Random order in which items with a higher weight tend to come first
@@ -69,16 +72,19 @@ export function drawNext(
     const retry = state.retry.filter((_, i) => i !== ri);
     return { state: { ...state, retry, served, last: word }, word, again: true };
   }
-  let deck = state.deck;
+  let { deck, pass, size } = state;
   if (deck.length === 0) {
-    // New pass; never open it with the word that just closed the previous one.
-    const fresh = pool.filter((w) => w !== state.last);
-    const words = fresh.length ? fresh : pool;
-    // The deck is drawn from the end, so put the first word to ask last.
-    deck = weight ? weightedOrder(words, weight, rng).reverse() : shuffle(words, rng);
+    // New pass. The deck is drawn from the end, so put the first word to ask last.
+    deck = weight ? weightedOrder(pool, weight, rng).reverse() : shuffle(pool, rng);
+    // Never open it with the word that just closed the previous one.
+    if (deck.length > 1 && deck[deck.length - 1] === state.last) {
+      deck = [...deck.slice(0, -2), deck[deck.length - 1], deck[deck.length - 2]];
+    }
+    pass++;
+    size = deck.length;
   }
   const word = deck[deck.length - 1];
-  return { state: { ...state, deck: deck.slice(0, -1), served, last: word }, word, again: false };
+  return { state: { ...state, deck: deck.slice(0, -1), served, last: word, pass, size }, word, again: false };
 }
 
 export function scheduleRetry(state: DeckState, word: Word, gap = RETRY_GAP): DeckState {
