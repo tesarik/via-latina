@@ -215,7 +215,7 @@ export default lesson("Slovíčka 2", "Častá slova z modliteb a katechismu (p�
   v("suscipio", "suscipere, suscēpī, susceptum", "přijímám, ujímám se", ["Suscipe, sancte Pater, hanc hostiam.", "Přijmi, svatý Otče, tuto oběť.", "Z obětování ve mši."]),
   v("taceo", "tacēre, tacuī, tacitum", "mlčím", ["Qui tacet, consentire videtur.", "Kdo mlčí, zdá se souhlasit.", "Česky: mlčení znamená souhlas."]),
   v("tollo", "tollere, sustulī, sublātum", "zdvihám, odnáším", ["Tolle, lege.", "Vezmi, čti.", "Hlas, který slyšel sv. Augustin před svým obrácením."]),
-  n("vis", "f. (akuz. vim, abl. vī)", "síla, moc", ["Vis unita fortior.", "Spojená síla je silnější.", "Pozor: vis je i „chceš“ (od volo)."]),
+  n("vis", "vīs f. (akuz. vim, abl. vī)", "síla, moc", ["Vis unita fortior.", "Spojená síla je silnější.", "Pozor: vis je i „chceš“ (od volo)."]),
   v("adiuvo", "adiuvāre, adiūvī, adiūtum", "pomáhám, podporuji", ["Adiuva nos, Deus.", "Pomoz nám, Bože.", "Odtud adjutant."]),
   a("admirabilis", "admīrābile", "podivuhodný", ["Quam admirabile est nomen tuum!", "Jak podivuhodné je tvé jméno!", "Žalm 8,2."]),
   n("annalis", "annālis m., obv. pl. annālēs", "letopis, kronika", ["Annales Romanorum", "Letopisy Římanů", "Odtud anály."]),

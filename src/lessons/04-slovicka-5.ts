@@ -59,7 +59,7 @@ export default lesson("Slovíčka 5", "Další slova z antického života: měst
   o("cotidie", "příslovce", "denně, každý den", ["Tollat crucem suam cotidie, et sequatur me.", "Ať bere denně svůj kříž a následuje mě.", "Lk 9,23. Též quotīdiē."]),
   n("dea", "deae f.", "bohyně", ["Magnae deae Dianae templum in nihilum reputabitur.", "Chrám velké bohyně Artemidy přijde vniveč.", "Sk 19,27. Dat. a abl. pl. deābus."]),
   a("gracilis", "gracile", "štíhlý, útlý", ["Puella gracilis saltat.", "Štíhlá dívka tančí.", "Srov. gracilní."]),
-  n("maritus", "maritī m.", "manžel", ["Maritus et uxor matrimonio coniuncti sunt.", "Manžel a manželka jsou spojeni manželstvím.", "Srov. maritální."]),
+  n("maritus", "marītī m.", "manžel", ["Maritus et uxor matrimonio coniuncti sunt.", "Manžel a manželka jsou spojeni manželstvím.", "Srov. maritální."]),
   n("matrona", "mātrōnae f.", "vdaná žena, paní", ["Matrona Romana in atrio sedebat.", "Římská paní seděla v atriu.", "Srov. matróna."]),
   v("minuo", "minuere, minuī, minūtum", "zmenšuji", ["Illum oportet crescere, me autem minui.", "On musí růst, já však se menšit.", "J 3,30. Srov. minuta."]),
   v("osculor", "ōsculārī, ōsculātus sum", "líbám", ["Quemcumque osculatus fuero, ipse est; tenete eum.", "Koho políbím, ten to je; toho chopte.", "Mt 26,48."]),

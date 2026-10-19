@@ -83,7 +83,7 @@ export default lesson("Slovíčka 9", "Vzácnější slova ze žalmů, hymnů a 
   o("postmodum", "příslovce", "potom, později", ["Prior postmodum fratres aspergit aqua benedicta.", "Převor potom pokropí bratry svěcenou vodou."]),
   n("uber", "ūberis n.", "prs, ňadro", ["Beatus venter qui te portavit, et ubera quae suxisti.", "Blažený život, který tě nosil, a prsy, které jsi sál.", "Lk 11,27. Též adj. ūber = hojný."]),
   n("varietas", "varietātis f.", "rozmanitost, proměnlivost", ["Inter omnes vitae huius varietates.", "Uprostřed všech proměn tohoto života.", "Česky varieta."]),
-  n("visitatio", "visitātiōnis f.", "navštívení", ["Visitatio Beatae Mariae Virginis", "Navštívení Panny Marie", "Od visito (navštěvuji); česky vizitace."]),
+  n("visitatio", "vīsitātiōnis f.", "navštívení", ["Visitatio Beatae Mariae Virginis", "Navštívení Panny Marie", "Od visito (navštěvuji); česky vizitace."]),
   n("acedia", "acēdiae f.", "duchovní lenost, malátnost", ["Pigritia seu acedia.", "Lenost neboli duchovní malátnost.", "Jeden ze sedmi hlavních hříchů. Z řečtiny."]),
   v("adaperio", "adaperīre, adaperuī, adapertum", "otevírám (dokořán)", ["Domine, adaperi oculos nostros.", "Pane, otevři naše oči."]),
   n("agonia", "agōniae f.", "smrtelný zápas, úzkost", ["Oratio et agonia Christi in horto.", "Modlitba a smrtelný zápas Krista v zahradě.", "Z řečtiny (agónia = zápas)."]),

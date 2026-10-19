@@ -100,7 +100,7 @@ export default lesson("Slovíčka 8", "Častější slova z modliteb, hymnů a �
   n("castitas", "castitātis f.", "čistota, cudnost", ["Da mihi castitatem et continentiam, sed noli modo.", "Dej mi čistotu a zdrženlivost, ale ještě ne hned.", "Sv. Augustin, Vyznání 8,7."]),
   n("consolatio", "cōnsōlātiōnis f.", "útěcha", ["Et de eius semper consolatione gaudere.", "A vždy se radovat z jeho útěchy.", "Z modlitby k Duchu Svatému (Deus, qui corda fidelium)."]),
   v("detineo", "dētinēre, dētinuī, dētentum", "zdržuji, zadržuji", ["Carcere detentos invisere.", "Navštěvovat vězně.", "Ze skutků tělesného milosrdenství."]),
-  v("extollo", "extollere", "pozvedám, vyvyšuji", ["Et rege eos, et extolle illos usque in aeternum.", "Spravuj je a povznes je až na věky.", "Z Te Deum. Perfektum se běžně neužívá."]),
+  v("extollo", "extollere, extulī, ēlātum", "pozvedám, vyvyšuji", ["Et rege eos, et extolle illos usque in aeternum.", "Spravuj je a povznes je až na věky.", "Z Te Deum. Perfektum se běžně neužívá."]),
   n("infantia", "īnfantiae f.", "dětství, útlé dětství", ["Ab infantia Deum amavit.", "Od dětství miloval Boha.", "Z infans = nemluvně."]),
   n("oblatio", "oblātiōnis f.", "obětování, oběť, dar", ["Oblatio Christi in templo.", "Obětování Ježíše v chrámě.", "Z radostných tajemství růžence. Odtud oblata."]),
   n("persecutio", "persecūtiōnis f.", "pronásledování", ["Beati, qui persecutionem patiuntur propter iustitiam.", "Blahoslavení, kdo trpí pronásledování pro spravedlnost.", "Mt 5,10."]),
