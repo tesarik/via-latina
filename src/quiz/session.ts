@@ -1,5 +1,5 @@
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, type DeckState, type Rng } from "./engine";
-import { isDue, isWeak, record, recordKey, today, weightOf, weightOfKey, wordKey, type Progress } from "./progress";
+import { isDue, isSkipped, isWeak, record, recordKey, setSkip, today, weightOf, weightOfKey, wordKey, type Progress } from "./progress";
 import { CHOICES, grammarKey, grammarQuestions, type GrammarKind } from "./grammar";
 import type { Settings, Word } from "./types";
 
@@ -46,18 +46,24 @@ export interface Session {
 /** How many cards the feed keeps, including the open one; older answered cards are dropped. */
 export const HISTORY_LIMIT = 20;
 
-/** Words the round asks from: the selection, narrowed by the focus while that still leaves something. */
+/**
+ * Words the round asks from: the selection without words marked "už se neptej",
+ * narrowed by the focus while that still leaves something. `all` (for distractors) keeps every word.
+ */
 function roundPool(settings: Settings, focus: Focus, progress: Progress, words: readonly Word[], day: number) {
   const all = poolFor(words, settings.lessons);
+  const open = all.filter((w) => !isSkipped(progress, w));
+  // Everything marked as known: ask it anyway rather than nothing.
+  const askable = open.length ? open : all;
   const narrowed =
     focus === "weak"
-      ? all.filter((w) => isWeak(progress, w, day))
+      ? askable.filter((w) => isWeak(progress, w, day))
       : focus === "due"
-        ? all.filter((w) => isDue(progress, w, day))
+        ? askable.filter((w) => isDue(progress, w, day))
         : focus === "grammar"
-          ? all.filter((w) => grammarQuestions(w).length > 0)
+          ? askable.filter((w) => grammarQuestions(w).length > 0)
           : [];
-  return narrowed.length ? { all, pool: narrowed, focus } : { all, pool: all, focus: "all" as const };
+  return narrowed.length ? { all, pool: narrowed, focus } : { all, pool: askable, focus: "all" as const };
 }
 
 function withNextQuestion(s: Omit<Session, "questions"> & { questions: Question[] }, words: readonly Word[], rng: Rng): Session {
@@ -125,6 +131,20 @@ export function answer(s: Session, id: number, choice: number, words: readonly W
     progress: q.grammar ? recordKey(s.progress, grammarKey(q.grammar.kind, q.word), ok) : record(s.progress, q.word, ok),
   };
   return withNextQuestion(next, words, rng);
+}
+
+/**
+ * "Umím, už se neptej" (or taking it back). A marked word also leaves the rest of
+ * the current pass, which then counts one word fewer.
+ */
+export function skipWord(s: Session, w: Word, skip: boolean): Session {
+  const progress = setSkip(s.progress, w, skip);
+  if (!skip) return { ...s, progress };
+  const k = wordKey(w);
+  const deck = s.deck.deck.filter((x) => wordKey(x) !== k);
+  const size = s.deck.size - (s.deck.deck.length - deck.length);
+  const retry = s.deck.retry.filter((r) => wordKey(r.word) !== k);
+  return { ...s, progress, deck: { ...s.deck, deck, size, retry } };
 }
 
 /** The round as stored between visits: words by key, plus the open question. */

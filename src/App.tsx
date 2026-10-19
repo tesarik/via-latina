@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { LESSONS, WORDS } from "./lessons";
-import { answer, choiceCount, loadRound, newSession, restoreSession, storeRound, type Focus, type Session } from "./quiz/session";
+import { answer, choiceCount, loadRound, newSession, restoreSession, skipWord, storeRound, type Focus, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
-import { loadProgress, saveProgress, totals, type Progress } from "./quiz/progress";
+import { isSkipped, loadProgress, saveProgress, totals, type Progress } from "./quiz/progress";
 import { useServiceWorkerUpdate } from "./useServiceWorkerUpdate";
 import UpdateToast from "./components/UpdateToast";
-import type { Settings } from "./quiz/types";
+import type { Settings, Word } from "./quiz/types";
 import QuestionCard from "./components/QuestionCard";
 import SettingsSheet from "./components/SettingsSheet";
 import StatTip from "./components/StatTip";
@@ -16,7 +16,8 @@ type Action =
   | { type: "answer"; id: number; choice: number }
   | { type: "restart"; settings: Settings; focus?: Focus }
   | { type: "resetProgress" }
-  | { type: "setProgress"; progress: Progress };
+  | { type: "setProgress"; progress: Progress }
+  | { type: "skip"; word: Word; skip: boolean };
 
 function reducer(s: Session, a: Action): Session {
   switch (a.type) {
@@ -28,6 +29,8 @@ function reducer(s: Session, a: Action): Session {
       return newSession(s.settings, WORDS, {});
     case "setProgress":
       return newSession(s.settings, WORDS, a.progress);
+    case "skip":
+      return skipWord(s, a.word, a.skip);
   }
 }
 
@@ -168,6 +171,8 @@ export default function App() {
               else slides.current.delete(q.id);
             }}
             question={q}
+            skipped={isSkipped(session.progress, q.word)}
+            onSkip={(skip) => dispatch({ type: "skip", word: q.word, skip })}
             onAnswer={(choice) => dispatch({ type: "answer", id: q.id, choice })}
             onNext={() => scrollTo(current.id)}
             onPrev={i > 0 ? () => scrollTo(session.questions[i - 1].id) : undefined}
@@ -209,7 +214,14 @@ export default function App() {
           onClose={() => setSettingsOpen(false)}
         />
       )}
-      {wordListOpen && <WordList settings={session.settings} progress={session.progress} onClose={() => setWordListOpen(false)} />}
+      {wordListOpen && (
+        <WordList
+          settings={session.settings}
+          progress={session.progress}
+          onSkip={(word, skip) => dispatch({ type: "skip", word, skip })}
+          onClose={() => setWordListOpen(false)}
+        />
+      )}
       {updateReady && <UpdateToast onUpdate={applyUpdate} onDismiss={dismissUpdate} />}
     </div>
   );

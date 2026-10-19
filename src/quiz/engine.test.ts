@@ -6,17 +6,19 @@ import {
   INTERVAL_DAYS,
   isDue,
   isKnown,
+  isSkipped,
   isWeak,
   KNOWN_BOX,
   parseProgress,
   record,
+  setSkip,
   today,
   totals,
   weightOf,
   wordKey,
   type Progress,
 } from "./progress";
-import { answer, HISTORY_LIMIT, isCorrect, newSession, restoreSession, saveRound } from "./session";
+import { answer, HISTORY_LIMIT, isCorrect, newSession, restoreSession, saveRound, skipWord } from "./session";
 import { grammarFacts, grammarKey, grammarQuestions } from "./grammar";
 import { LESSONS, WORDS } from "../lessons";
 import { lessonsFor, toggleLesson } from "./settings";
@@ -332,6 +334,35 @@ describe("progress", () => {
       expect(cur.progress[wordKey(cur.questions[0].word)]!.seen).toBeGreaterThan(0);
     }
     expect(early).toBeGreaterThanOrEqual(17);
+  });
+
+  it("a word marked as known is never asked and comes back once taken back", () => {
+    const id = LESSONS.at(-1)!.id;
+    const pool = poolFor(WORDS, [id]);
+    const rng = seeded(31);
+    let s = newSession({ lessons: [id] }, WORDS, {}, rng);
+    const marked = s.deck.deck.at(-1)!; // the next word the round would ask
+    const size = s.deck.size;
+    s = skipWord(s, marked, true);
+    expect(isSkipped(s.progress, marked)).toBe(true);
+    expect(isKnown(s.progress, marked)).toBe(true);
+    expect(isDue(s.progress, marked)).toBe(false);
+    expect(s.deck.size).toBe(size - 1);
+    const asked: Word[] = [];
+    for (let i = 0; i < pool.length * 2; i++) {
+      const q = s.questions.at(-1)!;
+      asked.push(q.word);
+      s = answer(s, q.id, q.options.indexOf(q.word), WORDS, rng);
+    }
+    expect(asked).not.toContain(marked);
+    expect(s.questions.at(-1)!.of).toBe(pool.length - 1);
+    // Survives a backup.
+    expect(importProgress(exportProgress(s.progress))![wordKey(marked)]!.skip).toBe(true);
+    s = skipWord(s, marked, false);
+    expect(isSkipped(s.progress, marked)).toBe(false);
+    // It was never answered, so it is a new word again.
+    expect(s.progress[wordKey(marked)]).toBeUndefined();
+    expect(setSkip({}, marked, false)).toEqual({});
   });
 
   it("counts answers across visits", () => {

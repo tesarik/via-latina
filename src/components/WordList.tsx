@@ -1,30 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
 import { LESSONS, WORDS } from "../lessons";
 import { poolFor } from "../quiz/engine";
-import { isDue, isKnown, isMissed, isSeen, today, type Progress } from "../quiz/progress";
+import { isDue, isKnown, isMissed, isSeen, isSkipped, today, type Progress } from "../quiz/progress";
 import type { Settings, Word } from "../quiz/types";
 
 interface Props {
   settings: Settings;
   progress: Progress;
+  onSkip: (w: Word, skip: boolean) => void;
   onClose: () => void;
 }
 
 /** What the learner knows about a word, shown as a label on its row. */
-type State = "new" | "seen" | "weak" | "known";
+type State = "new" | "seen" | "weak" | "known" | "skip";
 /** List filter: a state, or the words due for review today. */
 type Filter = "all" | State | "due";
 
-const STATE_LABEL: Record<State, string> = { new: "nové", seen: "prošel", weak: "chybné", known: "umím" };
+const STATE_LABEL: Record<State, string> = { new: "nové", seen: "prošel", weak: "chybné", known: "umím", skip: "neptat se" };
 
 const stateOf = (p: Progress, w: Word): State =>
-  isKnown(p, w) ? "known" : isMissed(p, w) ? "weak" : isSeen(p, w) ? "seen" : "new";
+  isSkipped(p, w) ? "skip" : isKnown(p, w) ? "known" : isMissed(p, w) ? "weak" : isSeen(p, w) ? "seen" : "new";
 
 /** Lowercase without accents or macrons, so "ama" finds "amō" and "zivot" finds "život". */
 const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 
 /** Every word of a lesson (or the selection) with what the learner knows about it; searchable by Latin or Czech. */
-export default function WordList({ settings, progress, onClose }: Props) {
+export default function WordList({ settings, progress, onSkip, onClose }: Props) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -82,6 +83,7 @@ export default function WordList({ settings, progress, onClose }: Props) {
             <option value="weak">Chybná</option>
             <option value="due">K zopakování dnes</option>
             <option value="known">Umím</option>
+            <option value="skip">Neptat se</option>
           </select>
         </div>
         <p className="wordlist-count">{words.length} slovíček</p>
@@ -108,6 +110,9 @@ export default function WordList({ settings, progress, onClose }: Props) {
                     {w.note.remark && <p className="wl-remark">{w.note.remark}</p>}
                   </div>
                 )}
+                <button type="button" className="wl-skip" onClick={() => onSkip(w, st !== "skip")}>
+                  {st === "skip" ? "Zase se ptát" : "Umím, už se neptej"}
+                </button>
               </details>
             </li>
           );

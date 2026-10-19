@@ -443,3 +443,8 @@ legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em
 .wl-remark { font-size: 15px; }
 .lesson .lesson-stat { text-align: right; line-height: 1.3; white-space: nowrap; }
 .grammar-ask { margin: 10px 0 0; font-size: 21px; font-weight: 700; }
+.wl-status.skip { border-style: double; border-width: 3px; }
+.wl-skip {
+  margin: 0 0 12px; padding: 6px 0; background: none; border: 0; font-size: 15px; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}

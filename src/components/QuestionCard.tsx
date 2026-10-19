@@ -5,6 +5,9 @@ import { reportWord } from "../report";
 
 interface Props {
   question: Question;
+  /** Marked "Umím, už se neptej". */
+  skipped: boolean;
+  onSkip: (skip: boolean) => void;
   onAnswer: (choice: number) => void;
   onNext: () => void;
   /** Back to the previous card; absent on the oldest card in the feed. */
@@ -12,7 +15,7 @@ interface Props {
 }
 
 const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
-  { question: q, onAnswer, onNext, onPrev },
+  { question: q, skipped, onSkip, onAnswer, onNext, onPrev },
   ref,
 ) {
   const answered = q.chosen !== null;
@@ -76,6 +79,22 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
               </button>
               {reportMsg && <span role="status"> {reportMsg}</span>}
             </p>
+            {!q.grammar && (
+              <p className="report">
+                {skipped ? (
+                  <>
+                    Už se na něj nezeptám.{" "}
+                    <button type="button" onClick={() => onSkip(false)}>
+                      Vrátit
+                    </button>
+                  </>
+                ) : (
+                  <button type="button" onClick={() => onSkip(true)}>
+                    Umím, už se neptej
+                  </button>
+                )}
+              </p>
+            )}
           </div>
         )}
       </div>

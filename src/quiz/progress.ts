@@ -11,6 +11,8 @@ export interface WordStat {
   wrong: number;
   /** Day (see `today`) from which the word is due for review; missing in old data, which counts as due. */
   due?: number;
+  /** "Umím, už se neptej": counts as known and is never asked, until taken back in the word list. */
+  skip?: boolean;
 }
 
 export type Progress = Readonly<Record<string, WordStat>>;
@@ -54,7 +56,7 @@ export const isSeen = (p: Progress, w: Word) => !!p[wordKey(w)];
 /** Answered before and due for review today: what "Dnes k zopakování" practises. */
 export function isDue(p: Progress, w: Word, day = today()): boolean {
   const s = p[wordKey(w)];
-  return !!s && (s.due ?? day) <= day;
+  return !!s && !s.skip && (s.due ?? day) <= day;
 }
 
 /** Answers given across all visits and lessons, from the stored per-word counts. */
@@ -68,7 +70,27 @@ export function totals(p: Progress): { right: number; total: number } {
   return { right, total };
 }
 
-export const isKnown = (p: Progress, w: Word) => (p[wordKey(w)]?.box ?? 0) >= KNOWN_BOX;
+export const isSkipped = (p: Progress, w: Word) => !!p[wordKey(w)]?.skip;
+
+export function isKnown(p: Progress, w: Word): boolean {
+  const s = p[wordKey(w)];
+  return !!s && (!!s.skip || s.box >= KNOWN_BOX);
+}
+
+/** Marks a word as known for good (never asked) or takes that back. */
+export function setSkip(p: Progress, w: Word, skip: boolean): Progress {
+  const k = wordKey(w);
+  const s: WordStat = { ...(p[k] ?? { box: 0, seen: 0, wrong: 0 }) };
+  if (skip) return { ...p, [k]: { ...s, skip: true } };
+  delete s.skip;
+  // Marked before it was ever answered: taking it back makes it a new word again.
+  if (s.seen === 0) {
+    const rest = { ...p };
+    delete rest[k];
+    return rest;
+  }
+  return { ...p, [k]: s };
+}
 
 /** Missed at least once and not yet known again. */
 export function isMissed(p: Progress, w: Word): boolean {
@@ -106,6 +128,7 @@ export function parseProgress(raw: unknown): Progress | null {
     if (s && Number.isFinite(s.box) && Number.isFinite(s.seen) && Number.isFinite(s.wrong)) {
       const stat: WordStat = { box: Math.max(0, Math.min(MAX_BOX, Math.trunc(s.box!))), seen: s.seen!, wrong: s.wrong! };
       if (Number.isFinite(s.due)) stat.due = Math.trunc(s.due!);
+      if (s.skip === true) stat.skip = true;
       out[k] = stat;
     }
   }
