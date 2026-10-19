@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { LESSONS, WORDS } from "./lessons";
-import { answer, loadRound, newSession, restoreSession, storeRound, type Focus, type Session } from "./quiz/session";
+import { answer, choiceCount, loadRound, newSession, restoreSession, storeRound, type Focus, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
 import { loadProgress, saveProgress, totals, type Progress } from "./quiz/progress";
 import { useServiceWorkerUpdate } from "./useServiceWorkerUpdate";
@@ -40,7 +40,7 @@ function initialSession(): Session {
   return (saved && restoreSession(saved, settings, WORDS, progress)) ?? newSession(settings, WORDS, progress);
 }
 
-const MODE_LABEL: Record<Exclude<Focus, "all">, string> = { weak: "chybná", due: "dnešní" };
+const MODE_LABEL: Record<Exclude<Focus, "all">, string> = { weak: "chybná", due: "dnešní", grammar: "gramatika" };
 
 export default function App() {
   const [session, dispatch] = useReducer(reducer, undefined, initialSession);
@@ -100,7 +100,7 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       if (settingsOpen || wordListOpen || onStart) return;
       const n = Number.parseInt(e.key, 10);
-      if (n >= 1 && n <= current.options.length) {
+      if (n >= 1 && n <= choiceCount(current)) {
         if (isCurrentInView()) dispatch({ type: "answer", id: current.id, choice: n - 1 });
         else scrollTo(current.id);
         e.preventDefault();
@@ -187,6 +187,7 @@ export default function App() {
           onContinue={() => startRound("all")}
           onWeak={() => startRound("weak")}
           onDue={() => startRound("due")}
+          onGrammar={() => startRound("grammar")}
           onLessons={() => setSettingsOpen(true)}
           onWordList={() => setWordListOpen(true)}
         />

@@ -4,6 +4,7 @@ import { poolFor } from "../quiz/engine";
 import { isDue, isKnown, isSeen, isWeak, today, type Progress } from "../quiz/progress";
 import type { Question } from "../quiz/session";
 import type { Settings } from "../quiz/types";
+import { grammarQuestions } from "../quiz/grammar";
 import { BACKUP_REMIND_DAYS, lastBackupDay, saveBackup } from "../backup";
 
 interface Props {
@@ -16,17 +17,19 @@ interface Props {
   onContinue: () => void;
   onWeak: () => void;
   onDue: () => void;
+  onGrammar: () => void;
   onLessons: () => void;
   onWordList: () => void;
 }
 
-export default function StartScreen({ settings, progress, answeredNow, place, onContinue, onWeak, onDue, onLessons, onWordList }: Props) {
+export default function StartScreen({ settings, progress, answeredNow, place, onContinue, onWeak, onDue, onGrammar, onLessons, onWordList }: Props) {
   const day = today();
   const pool = poolFor(WORDS, settings.lessons);
   const known = pool.filter((w) => isKnown(progress, w)).length;
   const seen = pool.filter((w) => isSeen(progress, w)).length;
   const weak = pool.filter((w) => isWeak(progress, w, day)).length;
   const due = pool.filter((w) => isDue(progress, w, day)).length;
+  const grammar = pool.some((w) => grammarQuestions(w).length > 0);
   const hasProgress = Object.keys(progress).length > 0;
   const fresh = !hasProgress && answeredNow === 0;
   const selection = settings.lessons.length
@@ -104,6 +107,11 @@ export default function StartScreen({ settings, progress, answeredNow, place, on
         {weak > 0 && (
           <button type="button" className="reset" onClick={onWeak}>
             Opakovat chybná slovíčka ({weak})
+          </button>
+        )}
+        {grammar && (
+          <button type="button" className="reset" onClick={onGrammar}>
+            Gramatika: rod, 2. pád, konjugace
           </button>
         )}
         <div className="backup">

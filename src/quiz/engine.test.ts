@@ -17,6 +17,7 @@ import {
   type Progress,
 } from "./progress";
 import { answer, HISTORY_LIMIT, isCorrect, newSession, restoreSession, saveRound } from "./session";
+import { grammarFacts, grammarKey, grammarQuestions } from "./grammar";
 import { LESSONS, WORDS } from "../lessons";
 import { lessonsFor, toggleLesson } from "./settings";
 import type { Word } from "./types";
@@ -374,5 +375,70 @@ describe("progress", () => {
     expect(missed.some((x) => isWeak(s.progress, x))).toBe(false);
     expect(s.focus).toBe("all");
     expect(asked.some((w) => !missed.includes(w))).toBe(true);
+  });
+});
+
+describe("grammar", () => {
+  const g = (pos: "n" | "v", la: string, info: string) => grammarFacts({ pos, la, info });
+
+  it("reads gender and declension from a noun's genitive", () => {
+    expect(g("n", "aqua", "aquae f.")).toEqual({ gender: 1, declension: 0 });
+    expect(g("n", "nauta", "nautae m.")).toEqual({ gender: 0, declension: 0 });
+    expect(g("n", "locus", "locī m.")).toEqual({ gender: 0, declension: 1 });
+    expect(g("n", "corpus", "corporis n.")).toEqual({ gender: 2, declension: 2 });
+    expect(g("n", "honor", "honōris m. (i honōs)")).toEqual({ gender: 0, declension: 2 });
+    expect(g("n", "manus", "manūs f.")).toEqual({ gender: 1, declension: 3 });
+    expect(g("n", "res", "reī f.")).toEqual({ gender: 1, declension: 4 });
+    expect(g("n", "dies", "diēī m.")).toEqual({ gender: 0, declension: 4 });
+  });
+
+  it("leaves out what it can't tell for sure", () => {
+    expect(g("n", "arma", "armōrum n. pl.")).toEqual({});
+    expect(g("n", "comes", "comitis m./f.")).toEqual({});
+    expect(g("n", "fortunae", "fortūnārum f. (pl.)")).toEqual({});
+    expect(g("v", "sum", "esse, fuī")).toEqual({});
+    expect(g("v", "redeo", "redīre, rediī, reditum")).toEqual({});
+    expect(g("v", "affero", "afferre, attulī, allātum")).toEqual({});
+    // Without macrons a plain -ere could be a 2nd conjugation verb.
+    expect(g("v", "extollo", "extollere")).toEqual({});
+  });
+
+  it("reads the conjugation from the infinitive", () => {
+    expect(g("v", "amo", "amāre, amāvī, amātum")).toEqual({ conjugation: 0 });
+    expect(g("v", "placeo", "placēre, placuī")).toEqual({ conjugation: 1 });
+    expect(g("v", "tego", "tegere, tēxī, tēctum")).toEqual({ conjugation: 2 });
+    expect(g("v", "eripio", "ēripere, ēripuī, ēreptum")).toEqual({ conjugation: 2 });
+    expect(g("v", "audio", "audīre, audīvī, audītum")).toEqual({ conjugation: 3 });
+    expect(g("v", "conor", "cōnārī, cōnātus sum")).toEqual({ conjugation: 0 });
+    expect(g("v", "loquor", "loquī, locūtus sum")).toEqual({ conjugation: 2 });
+  });
+
+  it("most nouns and verbs get a grammar question", () => {
+    const nv = WORDS.filter((w) => w.pos === "n" || w.pos === "v");
+    const asked = nv.filter((w) => grammarQuestions(w).length > 0);
+    expect(asked.length / nv.length).toBeGreaterThan(0.9);
+  });
+
+  it("a grammar round asks only nouns and verbs, scores the choice and keeps meanings apart", () => {
+    const id = LESSONS[0].id;
+    const rng = seeded(21);
+    let s = newSession({ lessons: [id] }, WORDS, {}, rng, "grammar");
+    for (let i = 0; i < 30; i++) {
+      const q = s.questions.at(-1)!;
+      expect(q.grammar).toBeDefined();
+      expect(q.options).toHaveLength(0);
+      const ok = i % 3 !== 0;
+      const choice = ok ? q.grammar!.answer : (q.grammar!.answer + 1) % q.grammar!.choices.length;
+      s = answer(s, q.id, choice, WORDS, rng);
+      expect(isCorrect(s.questions.at(-2)!)).toBe(ok);
+      const stat = s.progress[grammarKey(q.grammar!.kind, q.word)]!;
+      expect(stat.seen).toBeGreaterThan(0);
+      expect(s.progress[wordKey(q.word)]).toBeUndefined();
+    }
+    expect(s.focus).toBe("grammar");
+    expect(s.right).toBe(20);
+    // The open grammar question survives a save and restore.
+    const back = restoreSession(JSON.parse(JSON.stringify(saveRound(s))), { lessons: [id] }, WORDS, s.progress, rng)!;
+    expect(back.questions[0].grammar).toEqual(s.questions.at(-1)!.grammar);
   });
 });

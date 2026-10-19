@@ -36,7 +36,11 @@ export const wordKey = (w: Pick<Word, "pos" | "la" | "cz">) => `${w.pos}:${w.la}
  * the box, so a word becomes known only over several days.
  */
 export function record(p: Progress, w: Word, ok: boolean, day = today()): Progress {
-  const k = wordKey(w);
+  return recordKey(p, wordKey(w), ok, day);
+}
+
+/** `record` for any key, e.g. a grammar question about a word (see `grammarKey`). */
+export function recordKey(p: Progress, k: string, ok: boolean, day = today()): Progress {
   const s = p[k] ?? { box: 0, seen: 0, wrong: 0 };
   const seen = s.seen + 1;
   if (!ok) return { ...p, [k]: { box: 0, seen, wrong: s.wrong + 1, due: day } };
@@ -82,7 +86,11 @@ const UNSEEN_WEIGHT = 6;
 const NOT_DUE_WEIGHT = 0.5;
 
 export function weightOf(p: Progress, w: Word, day = today()): number {
-  const s = p[wordKey(w)];
+  return weightOfKey(p, wordKey(w), day);
+}
+
+export function weightOfKey(p: Progress, k: string, day = today()): number {
+  const s = p[k];
   if (!s) return UNSEEN_WEIGHT;
   return (s.due ?? day) <= day ? BOX_WEIGHT[Math.min(s.box, MAX_BOX)] : NOT_DUE_WEIGHT;
 }

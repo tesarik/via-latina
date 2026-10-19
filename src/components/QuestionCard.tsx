@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { isCorrect, type Question } from "../quiz/session";
+import { QUESTION } from "../quiz/grammar";
 import { speak } from "../speech";
 import { reportWord } from "../report";
 
@@ -60,7 +61,15 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
           {q.word.la}
           {voice && <SpeakButton text={q.word.la} voice={voice} label="Přečíst slovíčko" />}
         </h2>
-        <div className="info">{q.word.info}</div>
+        {q.grammar ? (
+          <>
+            {/* The grammar note would give the answer away, so it shows only once answered. */}
+            {answered ? <div className="info">{q.word.info}</div> : <div className="info">{q.word.cz}</div>}
+            {!answered && <p className="grammar-ask">{QUESTION[q.grammar.kind]}</p>}
+          </>
+        ) : (
+          <div className="info">{q.word.info}</div>
+        )}
         {note && (
           <div className="note">
             <p className="ex" lang="la">
@@ -86,12 +95,26 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
             <span className="verdict good">Recte!</span>
           ) : (
             <span className="verdict bad">
-              <b>{q.word.la}</b> = <b>{q.word.cz}</b>
+              <b>{q.word.la}</b> = <b>{q.grammar ? q.grammar.choices[q.grammar.answer] : q.word.cz}</b>
             </span>
           ))}
       </div>
 
       <div className="options">
+        {q.grammar?.choices.map((c, i) => {
+          let cls = "opt";
+          if (answered) {
+            if (i === q.grammar!.answer) cls += " right";
+            else if (i === q.chosen) cls += " wrong";
+            else return null;
+          }
+          return (
+            <button key={c} type="button" className={cls} disabled={answered} onClick={() => onAnswer(i)}>
+              <span className="key" aria-hidden="true">{i + 1}</span>
+              <span>{c}</span>
+            </button>
+          );
+        })}
         {q.options.map((o, i) => {
           let cls = "opt";
           if (answered) {

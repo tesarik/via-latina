@@ -1,5 +1,6 @@
 import { drawNext, emptyDeck, pickOptions, poolFor, scheduleRetry, type DeckState, type Rng } from "./engine";
-import { isDue, isWeak, record, today, weightOf, wordKey, type Progress } from "./progress";
+import { isDue, isWeak, record, recordKey, today, weightOf, weightOfKey, wordKey, type Progress } from "./progress";
+import { CHOICES, grammarKey, grammarQuestions, type GrammarKind } from "./grammar";
 import type { Settings, Word } from "./types";
 
 export interface Question {
@@ -14,13 +15,16 @@ export interface Question {
   pass: number;
   n: number;
   of: number;
+  /** Set for a grammar question: `options` is empty and the learner picks one of `choices`. */
+  grammar?: { kind: GrammarKind; choices: string[]; answer: number };
 }
 
 /**
  * "weak" practises only words missed earlier (see `isWeak`), "due" only words due
  * for review today (see `isDue`); once none are left the round goes on with everything.
+ * "grammar" asks gender, genitive or conjugation instead of the meaning (see grammar.ts).
  */
-export type Focus = "all" | "weak" | "due";
+export type Focus = "all" | "weak" | "due" | "grammar";
 
 export interface Session {
   settings: Settings;
@@ -46,7 +50,13 @@ export const HISTORY_LIMIT = 20;
 function roundPool(settings: Settings, focus: Focus, progress: Progress, words: readonly Word[], day: number) {
   const all = poolFor(words, settings.lessons);
   const narrowed =
-    focus === "weak" ? all.filter((w) => isWeak(progress, w, day)) : focus === "due" ? all.filter((w) => isDue(progress, w, day)) : [];
+    focus === "weak"
+      ? all.filter((w) => isWeak(progress, w, day))
+      : focus === "due"
+        ? all.filter((w) => isDue(progress, w, day))
+        : focus === "grammar"
+          ? all.filter((w) => grammarQuestions(w).length > 0)
+          : [];
   return narrowed.length ? { all, pool: narrowed, focus } : { all, pool: all, focus: "all" as const };
 }
 
@@ -55,18 +65,14 @@ function withNextQuestion(s: Omit<Session, "questions"> & { questions: Question[
   const { all, pool, focus } = roundPool(s.settings, s.focus, s.progress, words, day);
   // Switching focus (the last weak or due word learnt) starts a fresh pass over the whole selection.
   const deck = focus === s.focus ? s.deck : { ...s.deck, deck: [] };
-  const { state, word, again } = drawNext(deck, pool, rng, (w) => weightOf(s.progress, w, day));
+  const grammar = focus === "grammar";
+  const weight = grammar ? (w: Word) => grammarWeight(s.progress, w, day) : (w: Word) => weightOf(s.progress, w, day);
+  const { state, word, again } = drawNext(deck, pool, rng, weight);
   const id = (s.questions.at(-1)?.id ?? 0) + 1;
-  const q: Question = {
-    id,
-    word,
-    options: pickOptions(word, all, words, undefined, rng),
-    again,
-    chosen: null,
-    pass: state.pass,
-    n: state.size - state.deck.length,
-    of: state.size,
-  };
+  const place = { again, chosen: null, pass: state.pass, n: state.size - state.deck.length, of: state.size };
+  const q: Question = grammar
+    ? { id, word, options: [], ...place, grammar: grammarQuestion(word, weakestKind(s.progress, word, day, rng)) }
+    : { id, word, options: pickOptions(word, all, words, undefined, rng), ...place };
   return { ...s, focus, deck: state, questions: [...s.questions, q].slice(-HISTORY_LIMIT) };
 }
 
@@ -80,8 +86,27 @@ export function newSession(
   return withNextQuestion({ settings, focus, deck: emptyDeck(), questions: [], right: 0, total: 0, streak: 0, progress }, words, rng);
 }
 
+/** The grammar question of this kind about the word. */
+function grammarQuestion(w: Word, kind: GrammarKind): Question["grammar"] {
+  const answer = grammarQuestions(w).find((g) => g.kind === kind)!.answer;
+  return { kind, choices: CHOICES[kind], answer };
+}
+
+/** Of the grammar questions a noun has (gender, genitive), the one that most needs practice. */
+function weakestKind(p: Progress, w: Word, day: number, rng: Rng): GrammarKind {
+  const kinds = grammarQuestions(w).map((g) => ({ kind: g.kind, weight: weightOfKey(p, grammarKey(g.kind, w), day) + rng() }));
+  return kinds.sort((a, b) => b.weight - a.weight)[0].kind;
+}
+
+const grammarWeight = (p: Progress, w: Word, day: number) =>
+  Math.max(...grammarQuestions(w).map((g) => weightOfKey(p, grammarKey(g.kind, w), day)));
+
+/** How many answers the question offers (keys 1…n). */
+export const choiceCount = (q: Question) => q.grammar?.choices.length ?? q.options.length;
+
 export function isCorrect(q: Question): boolean {
-  return q.chosen !== null && q.options[q.chosen] === q.word;
+  if (q.chosen === null) return false;
+  return q.grammar ? q.chosen === q.grammar.answer : q.options[q.chosen] === q.word;
 }
 
 /** Records an answer to the open question and queues the next one. No-op for anything already answered. */
@@ -97,7 +122,7 @@ export function answer(s: Session, id: number, choice: number, words: readonly W
     right: s.right + (ok ? 1 : 0),
     total: s.total + 1,
     streak: ok ? s.streak + 1 : 0,
-    progress: record(s.progress, q.word, ok),
+    progress: q.grammar ? recordKey(s.progress, grammarKey(q.grammar.kind, q.word), ok) : record(s.progress, q.word, ok),
   };
   return withNextQuestion(next, words, rng);
 }
@@ -111,7 +136,7 @@ export interface SavedRound {
   served: number;
   pass: number;
   size: number;
-  open: { key: string; again: boolean; pass: number; n: number; of: number };
+  open: { key: string; again: boolean; pass: number; n: number; of: number; kind?: GrammarKind };
 }
 
 export function saveRound(s: Session): SavedRound {
@@ -125,7 +150,7 @@ export function saveRound(s: Session): SavedRound {
     served: d.served,
     pass: d.pass,
     size: d.size,
-    open: { key: wordKey(q.word), again: q.again, pass: q.pass, n: q.n, of: q.of },
+    open: { key: wordKey(q.word), again: q.again, pass: q.pass, n: q.n, of: q.of, kind: q.grammar?.kind },
   };
 }
 
@@ -151,8 +176,15 @@ export function restoreSession(
     return w ? [{ word: w, due: r.due }] : [];
   });
   const { all } = roundPool(settings, saved.focus, progress, words, today());
-  const { again, pass, n, of } = saved.open;
-  const q: Question = { id: 1, word, options: pickOptions(word, all, words, undefined, rng), again, chosen: null, pass, n, of };
+  const { again, pass, n, of, kind } = saved.open;
+  const place = { id: 1, word, again, chosen: null, pass, n, of };
+  let q: Question;
+  if (kind) {
+    if (!grammarQuestions(word).some((g) => g.kind === kind)) return null;
+    q = { ...place, options: [], grammar: grammarQuestion(word, kind) };
+  } else {
+    q = { ...place, options: pickOptions(word, all, words, undefined, rng) };
+  }
   return {
     settings,
     focus: saved.focus,
