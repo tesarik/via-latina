@@ -1,13 +1,10 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { isCorrect, type Question } from "../quiz/session";
 import { QUESTION } from "../quiz/grammar";
-import { speak } from "../speech";
 import { reportWord } from "../report";
 
 interface Props {
   question: Question;
-  /** Voice for the speaker buttons; null hides them. */
-  voice: SpeechSynthesisVoice | null;
   onAnswer: (choice: number) => void;
   onNext: () => void;
   /** Back to the previous card; absent on the oldest card in the feed. */
@@ -15,7 +12,7 @@ interface Props {
 }
 
 const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
-  { question: q, voice, onAnswer, onNext, onPrev },
+  { question: q, onAnswer, onNext, onPrev },
   ref,
 ) {
   const answered = q.chosen !== null;
@@ -57,10 +54,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
             </>
           )}
         </div>
-        <h2 className="word" lang="la">
-          {q.word.la}
-          {voice && <SpeakButton text={q.word.la} voice={voice} label="Přečíst slovíčko" />}
-        </h2>
+        <h2 className="word">{q.word.la}</h2>
         {q.grammar ? (
           <>
             {/* The grammar note would give the answer away, so it shows only once answered. */}
@@ -72,10 +66,7 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
         )}
         {note && (
           <div className="note">
-            <p className="ex" lang="la">
-              {note.ex}
-              {voice && <SpeakButton text={note.ex} voice={voice} label="Přečíst příklad" />}
-            </p>
+            <p className="ex" lang="la">{note.ex}</p>
             <p className="tr">{note.tr}</p>
             {note.remark && <p className="remark">{note.remark}</p>}
             {/* Inside the scrolling prompt, so it never takes room from the example. */}
@@ -141,16 +132,5 @@ const QuestionCard = forwardRef<HTMLElement, Props>(function QuestionCard(
     </section>
   );
 });
-
-function SpeakButton({ text, voice, label }: { text: string; voice: SpeechSynthesisVoice; label: string }) {
-  return (
-    <button type="button" className="speak" aria-label={label} onClick={() => speak(text, voice)}>
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-        <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" />
-        <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
-      </svg>
-    </button>
-  );
-}
 
 export default QuestionCard;

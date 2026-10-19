@@ -11,7 +11,6 @@ import SettingsSheet from "./components/SettingsSheet";
 import StatTip from "./components/StatTip";
 import StartScreen from "./components/StartScreen";
 import WordList from "./components/WordList";
-import { useLatinVoice } from "./speech";
 
 type Action =
   | { type: "answer"; id: number; choice: number }
@@ -45,7 +44,6 @@ const MODE_LABEL: Record<Exclude<Focus, "all">, string> = { weak: "chybná", due
 export default function App() {
   const [session, dispatch] = useReducer(reducer, undefined, initialSession);
   const { updateReady, applyUpdate, dismissUpdate } = useServiceWorkerUpdate();
-  const voice = useLatinVoice();
 
   useEffect(() => saveProgress(session.progress), [session.progress]);
   useEffect(() => storeRound(session), [session]);
@@ -170,7 +168,6 @@ export default function App() {
               else slides.current.delete(q.id);
             }}
             question={q}
-            voice={voice}
             onAnswer={(choice) => dispatch({ type: "answer", id: q.id, choice })}
             onNext={() => scrollTo(current.id)}
             onPrev={i > 0 ? () => scrollTo(session.questions[i - 1].id) : undefined}

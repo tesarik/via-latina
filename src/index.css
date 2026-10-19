@@ -389,19 +389,7 @@ legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em
 }
 .update-x { border: 0; background: none; color: var(--bg); font-size: 26px; width: 40px; height: 40px; cursor: pointer; }
 
-/* ---- speaker and report buttons on the card ---- */
-.speak {
-  width: 40px; height: 40px;
-  margin-left: 6px;
-  display: inline-grid; place-items: center;
-  vertical-align: middle;
-  border: 2px solid var(--fg); border-radius: 50%;
-  background: var(--bg); color: var(--fg);
-  cursor: pointer;
-}
-.speak:active { background: var(--fg); color: var(--bg); }
-.note .ex .speak { width: 32px; height: 32px; }
-.note .ex .speak svg { width: 18px; height: 18px; }
+/* ---- report button on the card ---- */
 .note .report { margin-top: 8px; font-size: 15px; }
 .report button {
   background: none; border: 0; padding: 6px 0; font-size: inherit; cursor: pointer;
