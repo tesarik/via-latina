@@ -30,7 +30,7 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - `src/quiz/settings.ts` — selected lesson ids in `localStorage` (`vialatina_settings`; empty = all) plus `toggleLesson`/`lessonsFor`: the settings sheet keeps its own explicit ticked list, which may be empty for a moment ("Všechny lekce" unticks everything so one lesson can be picked); the round changes only while at least one lesson is ticked, and ticking all collapses to "all".
 - `src/quiz/types.ts` — `Word`, `Lesson`, `Note`, `Settings`.
 - `src/App.tsx` — the snap-scrolling feed. Remembers which card is on screen and restores it when old cards are dropped (`overflow-anchor: none`, feed is `position: relative` so `offsetTop` is feed-relative). Keyboard: 1–4 answer the open card if it is on screen, Enter/↓ go to it.
-- `src/components/StartScreen.tsx` — shown on every launch as a fixed overlay over the feed (the feed stays mounted, so returning keeps the place): known x / y for the selection with a bar, "Začít" (no progress yet) / "Pokračovat", "Opakovat chybná slovíčka (n)" when some exist, "Vybrat lekce" (opens the settings sheet). Tapping "Via Latina" in the header goes back to it.
+- `src/components/StartScreen.tsx` — shown on every launch as a fixed overlay over the feed (the feed stays mounted, so returning keeps the place): known x / y and seen ("Prošel jsi") x / y for the selection, one bar with seen hatched and known solid, "Začít" (no progress yet) / "Pokračovat", "Opakovat chybná slovíčka (n)" when some exist, "Vybrat lekce" (opens the settings sheet). Tapping "Via Latina" in the header goes back to it.
 - `src/components/QuestionCard.tsx` (card, ↑ previous / ↓ next buttons), `SettingsSheet.tsx` (bottom sheet with lesson checkboxes and each lesson's description; rows are `flex: none` so the scrolling list never squeezes them), `StatTip.tsx` (tap-to-explain bubble for the header figures).
 - `src/quiz/engine.test.ts` — all tests, including lesson-data checks (no empty fields, no duplicate pos+headword within a lesson, every word has an example sentence with translation).
 
@@ -52,6 +52,6 @@ Mobile-first vocabulary quiz for Latin. One Latin word per screen with four Czec
 - Lessons are **vocabulary sets of roughly 300 words**, not textbook grammar chapters; titles are just "Slovíčka N". A new set leaves out words already in earlier sets.
 - **Every word has an example sentence** with Czech translation (enforced by a test); remarks are optional. Examples/notes are AI-written; the user reports errors and they get fixed.
 - **Do not mention the source** of Slovíčka 2/3 anywhere in the repo (README, comments, docs).
-- Header: "správně x/y" and "série" explain themselves via tap tooltips; keep the streak tooltip short.
+- Header: "správně x/y" counts all answers ever (summed from the stored per-word `seen`/`wrong`, `totals()`), "série" only since launch; both explain themselves via tap tooltips; keep the streak tooltip short.
 - Commit and push to `main` after each finished change; end commit messages with the Co-Authored-By line.
 - Work only in this repo; don't change or open PRs in sibling projects (latin-rosary…) from a via-latina session.

@@ -342,8 +342,12 @@ legend { padding: 0; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.12em
 .start-sub { margin: 8px 0 0; font-size: 19px; }
 .start-progress p { margin: 0; font-size: 20px; }
 .start-progress b { font-weight: 800; }
-.bar { height: 10px; margin: 12px 0; border: 2px solid var(--fg); border-radius: 999px; overflow: hidden; }
-.bar > div { height: 100%; background: var(--fg); }
+.bar { position: relative; height: 10px; margin: 12px 0; border: 2px solid var(--fg); border-radius: 999px; overflow: hidden; }
+/* Seen words as a hatched layer, known ones solid on top (black and white only). */
+.bar > div { position: absolute; inset: 0 auto 0 0; height: 100%; }
+.bar-known { background: var(--fg); }
+.bar-seen { background: repeating-linear-gradient(-45deg, var(--fg) 0 2px, transparent 2px 5px); }
+.start-progress .start-seen { font-size: 16px; }
 .start-progress .start-sel { font-size: 16px; }
 .start-actions { display: flex; flex-direction: column; gap: 12px; }
 

@@ -1,6 +1,6 @@
 import { LESSONS, WORDS } from "../lessons";
 import { poolFor } from "../quiz/engine";
-import { isKnown, isWeak, type Progress } from "../quiz/progress";
+import { isKnown, isWeak, wordKey, type Progress } from "../quiz/progress";
 import type { Settings } from "../quiz/types";
 
 interface Props {
@@ -16,6 +16,7 @@ interface Props {
 export default function StartScreen({ settings, progress, answeredNow, onContinue, onWeak, onLessons }: Props) {
   const pool = poolFor(WORDS, settings.lessons);
   const known = pool.filter((w) => isKnown(progress, w)).length;
+  const seen = pool.filter((w) => progress[wordKey(w)]).length;
   const weak = pool.filter((w) => isWeak(progress, w)).length;
   const fresh = Object.keys(progress).length === 0 && answeredNow === 0;
   const selection = settings.lessons.length
@@ -23,7 +24,7 @@ export default function StartScreen({ settings, progress, answeredNow, onContinu
         .map((l) => l.title)
         .join(", ")
     : "všechny lekce";
-  const share = pool.length ? known / pool.length : 0;
+  const pct = (n: number) => `${pool.length ? Math.round((n / pool.length) * 1000) / 10 : 0}%`;
 
   return (
     <section className="start" aria-labelledby="start-title">
@@ -36,8 +37,12 @@ export default function StartScreen({ settings, progress, answeredNow, onContinu
         <p>
           Umíš <b>{known}</b> z {pool.length} slovíček
         </p>
+        <p className="start-seen">
+          Prošel jsi <b>{seen}</b> z {pool.length}
+        </p>
         <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={pool.length} aria-valuenow={known} aria-label="Naučená slovíčka">
-          <div style={{ width: `${Math.round(share * 1000) / 10}%` }} />
+          <div className="bar-seen" style={{ width: pct(seen) }} />
+          <div className="bar-known" style={{ width: pct(known) }} />
         </div>
         <p className="start-sel">Procvičuješ: {selection}</p>
       </div>

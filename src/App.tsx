@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState }
 import { LESSONS, WORDS } from "./lessons";
 import { answer, newSession, type Focus, type Session } from "./quiz/session";
 import { loadSettings, saveSettings } from "./quiz/settings";
-import { loadProgress, saveProgress, type Progress } from "./quiz/progress";
+import { loadProgress, saveProgress, totals, type Progress } from "./quiz/progress";
 import { useServiceWorkerUpdate } from "./useServiceWorkerUpdate";
 import UpdateToast from "./components/UpdateToast";
 import type { Settings } from "./quiz/types";
@@ -45,6 +45,7 @@ export default function App() {
   const feedRef = useRef<HTMLElement>(null);
   const slides = useRef(new Map<number, HTMLElement>());
 
+  const allTime = totals(session.progress);
   const current = session.questions[session.questions.length - 1];
 
   // Which card is on screen, kept up to date while scrolling.
@@ -125,9 +126,9 @@ export default function App() {
             open={tip === "score"}
             onToggle={() => setTip(tip === "score" ? null : "score")}
             onClose={closeTip}
-            tip={`Správně ${session.right} z ${session.total} zodpovězených slovíček.`}
+            tip={`Správně ${allTime.right} z ${allTime.total} odpovědí celkem, od začátku a ve všech lekcích.`}
           >
-            <b>{session.right}</b>/{session.total}
+            <b>{allTime.right}</b>/{allTime.total}
           </StatTip>
           <StatTip
             open={tip === "streak"}

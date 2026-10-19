@@ -29,6 +29,17 @@ export function record(p: Progress, w: Word, ok: boolean): Progress {
   };
 }
 
+/** Answers given across all visits and lessons, from the stored per-word counts. */
+export function totals(p: Progress): { right: number; total: number } {
+  let right = 0;
+  let total = 0;
+  for (const s of Object.values(p)) {
+    total += s.seen;
+    right += s.seen - s.wrong;
+  }
+  return { right, total };
+}
+
 export const isKnown = (p: Progress, w: Word) => (p[wordKey(w)]?.box ?? 0) >= KNOWN_BOX;
 
 /** Missed at least once and not yet known again: what "Opakovat chybná" practises. */
